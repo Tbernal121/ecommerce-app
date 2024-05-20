@@ -1,12 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, HttpStatus, HttpCode } from '@nestjs/common';
 import internal from 'stream';
 
 interface ProductInfo{
     productId: number;
     name: string;
     price: number; // it's an example, in the real world the price shouldn't be sent by the client
-    limit: number;
-    offset: number;
     brand: string;
 }
 
@@ -20,9 +18,9 @@ export class ProductsController {
     }
 
     @Get()
-    getFilter(@Query('limit') limit = 100, @Query('offset') offset = 20, @Query('brand') brand: string){ //  other option: @Query() { limit, offset }: ProductInfo
+    getFilter(@Query('price') price = 100, @Query('productId') productId = 20, @Query('brand') brand: string){ //  other option: @Query() { price, productId }: ProductInfo
         return {
-            message: `products: limit: ${limit} offset: ${offset} brand ${brand}`,
+            message: `products: price: ${price} productId: ${productId} brand ${brand}`,
         }; 
     }
 
