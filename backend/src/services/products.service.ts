@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import {Product} from './../entities/product.entity';
 import { faker } from '@faker-js/faker';
 
@@ -45,22 +45,31 @@ export class ProductsService {
     }
 
     update(id: number, payload: any) {
-        const index = this.products.findIndex((item) => item.id === id);
-        if (index === -1) throw new Error(`Product with id ${id} not found`);
-        this.products[index] = {
-          id: id,
-          ...payload,
-        };
-        return {
-          Message: 'Product updated',
-          Updated: this.products[index],
-        };
+        // option 1 - better
+        const product = this.findOne(id);        
+        if (product){
+            const index = this.products.findIndex((item) => item.id === id);
+            this.products[index] = {
+            id: id,
+            ...product,
+            ...payload,
+            };
+            return {
+                Message: 'Product updated',
+                Updated: this.products[index],
+              };
+        }        
+        else {
+            throw new Error(`Product with id ${id} not found`);
+            return null;
+        }        
     }
 
     delete(id: number) {
+        
         const index = this.products.findIndex((item) => item.id === id);
         if (index === -1) throw new Error(`Product with id ${id} not found`);
         this.products.splice(index, 1);
-        return 'product deleted';
+        return `product ${id} deleted`;
     }
 }
