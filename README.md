@@ -28,6 +28,7 @@ Welcome to the Ecommerce App Backend! This project is built with NestJS to provi
 * Passport.js: Simple, unobtrusive authentication for Node.js (🚧 In progress).
 
 
+
 ## 📦 Installation
 
 **1. Clone the repository:**
@@ -64,3 +65,65 @@ JWT_SECRET=your-secret-key
 ```bash
 npm run start:dev
 ```
+
+
+<!--## 🛠️ Usage
+
+### Endpoints
+
+* **Authentication**
+
+    * POST /auth/register: Register a new user
+
+    * POST /auth/login: Login an existing user
+
+* **Products**
+
+    * GET /products: Get all products
+
+    * POST /products: Create a new product
+
+    * GET /products/:id: Get a product by ID
+
+    * PUT /products/:id: Update a product by ID
+
+    * DELETE /products/:id: Delete a product by ID
+
+* **Orders**
+
+    * GET /orders: Get all orders
+
+    * POST /orders: Create a new order
+    * GET /orders/:id: Get an order by ID-->
+
+
+<!--## 🧪 Testing
+
+Run tests using:
+
+```bash
+npm run test
+``` -->
+
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+
+## 🌟 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+
+<!-- ## 🤝 Acknowledgements
+
+Special thanks to the contributors and community for their support and contributions.-->
+
+
+## ✉️ Contact
+Tomás Bernal Zuluaga - [tbernalz@eafit.edu.co](mailto:tbernalz@eafit.edu.co)
+
+<a href="https://www.linkedin.com/in/tbernalz" target="_blank" rel="noreferrer">
+    <img src="https://seeklogo.com/images/L/linkedin-new-2020-logo-E14A5D55ED-seeklogo.com.png" alt="Linkedin" width="40" height="40"/>
+  </a>
