@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, HttpStatus, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, HttpStatus, HttpCode, ParseIntPipe } from '@nestjs/common';
 import internal from 'stream';
 import {ProductsService} from './../services/products.service'
 import {Product} from './../entities/product.entity';
+import {PositiveIntegerPipe} from '../pipes/positive-integer.pipe';
 
 @Controller('products')
 export class ProductsController {
@@ -13,14 +14,14 @@ export class ProductsController {
     }
 
     @Get(':id') // here no longer 'products' in @Get('products/:id') because the @Controller('products') already is giving it to the route
-    getOne(@Param('id') id: string){
-        return this.productsService.findOne(+id); // here I'm converting id to a number in the (+id)
+    getOne(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number){ // the PositiveIntegerPipe would'n be reached
+        return this.productsService.findOne(id);
     }
 
     @Get()
-    getFilter( // In progress
+    getFilter( // In process
         @Query('price') price = 100, 
-        @Query('id') id = 20, 
+        @Query('id', ParseIntPipe) id = 20, 
         @Query('brand') brand: string
     ) {
         return {
@@ -34,12 +35,12 @@ export class ProductsController {
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() payload: any){
+    update(@Param('id', ParseIntPipe) id: string, @Body() payload: any){
         return this.productsService.update(+id, payload);
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string){
+    delete(@Param('id', ParseIntPipe) id: string){
         return this.productsService.delete(+id)
     }
 }
