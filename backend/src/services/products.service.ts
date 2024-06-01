@@ -1,4 +1,4 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {Product} from './../entities/product.entity';
 import { faker } from '@faker-js/faker';
 
@@ -30,14 +30,17 @@ export class ProductsService {
         return this.products;
     }
 
-    findOne(productId: number){
-        return this.products.find(item=>item.id === productId);
+    findOne(id: number){
+        const product = this.products.find(item=>item.id === id);
+        if(!product){
+            throw new NotFoundException(`Product with id #${id} not found`);
+        }
+        return product;
     }
 
     create(payload: any){
-        this.counterId++;
         const newProduct = {
-            id: this.counterId,
+            id: ++this.counterId,
             ...payload,
         };
         this.products.push(newProduct);
@@ -45,30 +48,24 @@ export class ProductsService {
     }
 
     update(id: number, payload: any) {
-        // option 1 - better
-        const product = this.findOne(id);        
-        if (product){
-            const index = this.products.findIndex((item) => item.id === id);
-            this.products[index] = {
-            id: id,
-            ...product,
-            ...payload,
-            };
-            return {
-                Message: 'Product updated',
-                Updated: this.products[index],
-              };
-        }        
-        else {
-            throw new Error(`Product with id ${id} not found`);
-            return null;
-        }        
+        const product = this.findOne(id);     
+        const index = this.products.findIndex((item) => item.id === id);
+        this.products[index] = {            
+        ...product,
+        ...payload,
+        id: id, // To prevent the user from entering the ID in the body
+        };
+        return {
+            Message: 'Product updated',
+            Updated: this.products[index],
+            };      
     }
 
-    delete(id: number) {
-        
+    delete(id: number) {        
         const index = this.products.findIndex((item) => item.id === id);
-        if (index === -1) throw new Error(`Product with id ${id} not found`);
+        if (index === -1) {
+            throw new NotFoundException(`Product with id #${id} not found`);
+        }
         this.products.splice(index, 1);
         return `product ${id} deleted`;
     }
