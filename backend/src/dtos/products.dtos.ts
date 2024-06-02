@@ -1,50 +1,173 @@
+import { IsString, IsNumber, IsUrl, IsNotEmpty, IsOptional, IsPositive, IsDate } from 'class-validator';
+import { PartialType, OmitType } from '@nestjs/mapped-types'
+
 export class CreateProductDto {
-    readonly id: number;
-    readonly name: string;
-    readonly description: string;
-    readonly price: number;
-    readonly stock: number;
-    readonly brand: string;
-    readonly image: string; // an url of the image
-    readonly category: string; 
-    readonly tags?: string[];
-    readonly discount?: number;
-    readonly rating: number;
-    readonly reviews: string[];
-    readonly weight?: number;
-    readonly height?: number;
-    readonly width?: number;
-    readonly depth?: number;
-    readonly manufacturer?: string;
-    readonly dateAdded: Date;
+  /*@IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  readonly id: number;*/
+
+  @IsNotEmpty()
+  @IsString()
+  readonly name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly description: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  readonly price: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  readonly stock: number;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly brand: string;
+
+  @IsNotEmpty()
+  @IsUrl()
+  readonly image: string; // an url of the image
+
+  @IsNotEmpty()
+  @IsString({ each: true }) // validate each item in the array as string
+  readonly category: string;
+
+  @IsOptional()
+  @IsString({ each: true }) // validate each item in the array as string
+  readonly tags?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  readonly discount?: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  // add a raging range
+  readonly rating: number;
+
+  @IsNotEmpty()
+  @IsString({ each: true }) // validate each item in the array as string
+  readonly reviews: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  readonly weight?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  readonly height?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  readonly width?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  readonly depth?: number;
+
+  @IsOptional()
+  @IsString()
+  readonly manufacturer?: string;
+
+  @IsDate()
+  readonly dateAdded: Date;
 }
 
+//export class UpdateProductDto extends PartialType(CreateProductDto){}
+export class UpdateProductDto extends OmitType(CreateProductDto, ['dateAdded']) {}
+
+
+/*
 export class UpdateProductDto {
-    readonly id?: number;
+    @IsNotEmpty() // Make id required
+    @IsNumber()
+    @IsPositive()
+    readonly id: number;
+  
+    @IsOptional()
+    @IsString()
     readonly name?: string;
+  
+    @IsOptional()
+    @IsString()
     readonly description?: string;
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly price?: number;
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly stock?: number;
+  
+    @IsOptional()
+    @IsString()
     readonly brand?: string;
+  
+    @IsOptional()
+    @IsUrl()
     readonly image?: string; // Optional image URL update
+  
+    @IsOptional()
+    @IsString()
     readonly category?: string;
+  
+    @IsOptional()
+    @IsString({ each: true }) // validate each item in the array as string
     readonly tags?: string[]; // Optional update to tags
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly discount?: number;
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
+    // add a raging range
     readonly rating?: number; // Optional update to rating
+  
+    @IsOptional()
+    @IsString({ each: true }) // validate each item in the array as string
     readonly reviews?: string[]; // Optional update to reviews
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly weight?: number;
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly height?: number;
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly width?: number;
+  
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
     readonly depth?: number;
+  
+    @IsOptional()
+    @IsString()
     readonly manufacturer?: string;
-    readonly dateAdded?: Date; // Not updatable (assuming creation date is immutable)
+  
+    // Removed dateAdded as it's assumed to be immutable
   }
-
-
-// products.dto.ts
-export class CreateProductDTO {
-    readonly name: string;
-    readonly description: string;
-    readonly price: number;
-    readonly image?: string; // the ? because it's an optional item
-  }
+  */
