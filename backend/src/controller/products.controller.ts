@@ -3,6 +3,7 @@ import internal from 'stream';
 import {ProductsService} from './../services/products.service'
 import {Product} from './../entities/product.entity';
 import {PositiveIntegerPipe} from '../pipes/positive-integer.pipe';
+import {CreateProductDto, UpdateProductDto} from '../dtos/products.dtos';
 
 @Controller('products')
 export class ProductsController {
@@ -30,12 +31,12 @@ export class ProductsController {
     }
 
     @Post()
-    create(@Body() payload: any){
+    create(@Body() payload: CreateProductDto){
         return this.productsService.create(payload)
     }
 
     @Put(':id')
-    update(@Param('id', ParseIntPipe) id: string, @Body() payload: any){
+    update(@Param('id', ParseIntPipe) id: string, @Body() payload: UpdateProductDto){
         return this.productsService.update(+id, payload);
     }
 
