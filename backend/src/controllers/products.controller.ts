@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, ValidationPipe, UsePipes } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
 import { PositiveIntegerPipe } from '../pipes/positive-integer.pipe';
-import { ProductsService } from './../services/products.service';
+import { ProductsService } from '../services/products.service';
 
 @Controller('products')
 export class ProductsController {
