@@ -27,6 +27,13 @@ Welcome to the Ecommerce App Backend! This project is built with NestJS to provi
 
 * Passport.js: Simple, unobtrusive authentication for Node.js (🚧 In progress).
 
+    [<img src = https://seeklogo.com/images/N/nestjs-logo-09342F76C0-seeklogo.com.png alt="nestjs" width="40" height="40">](https://nestjs.com/)
+    [<img src = https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png alt="typescript" width="40" height="40">](https://www.typescriptlang.org/)
+    [<img src = https://seeklogo.com/images/P/postgresql-logo-5309879B58-seeklogo.com.png alt="postgresql" width="40" height="40">](https://www.postgresql.org/)
+    [<img src = https://seeklogo.com/images/T/typeorm-logo-F243B34DEE-seeklogo.com.png alt="TypeORM " width="40" height="40">](https://typeorm.io/)
+    [<img src = https://seeklogo.com/images/P/passport-logo-16D89B2F37-seeklogo.com.png alt="passportjs" width="40" height="40">](https://www.passportjs.org/)
+
+
 
 
 ## 📦 Installation
