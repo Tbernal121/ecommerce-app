@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {Product} from './../entities/product.entity';
+import { Product } from './../entities/product.entity';
 import { faker } from '@faker-js/faker';
-import {CreateProductDto, UpdateProductDto} from '../dtos/products.dtos';
+import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
 
 @Injectable()
 export class ProductsService {
     private counterId = 1;
-    private products: Product[] = [{ // mini example DB, in a real app this should be with a real DB
+    private products: Product[] = [ { // mini example DB, in a real app this should be with a real DB
         id: 1,
         name: faker.commerce.productName(),
         description: faker.lorem.sentence(),
@@ -31,7 +31,7 @@ export class ProductsService {
         return this.products;
     }
 
-    findOne(id: number){
+    findOne(id: number) {
         const product = this.products.find(item=>item.id === id);
         if(!product){
             throw new NotFoundException(`Product with id #${id} not found`);
@@ -39,7 +39,7 @@ export class ProductsService {
         return product;
     }
 
-    create(payload: CreateProductDto){
+    create(payload: CreateProductDto) {
         const newProduct = {
             id: ++this.counterId,
             ...payload,
@@ -52,9 +52,9 @@ export class ProductsService {
         const product = this.findOne(id);     
         const index = this.products.findIndex((item) => item.id === id);
         this.products[index] = {            
-        ...product,
-        ...payload,
-        id: id, // To prevent the user from entering the ID in the body
+            ...product,
+            ...payload,
+            id: id, // To prevent the user from entering the ID in the body
         };
         return {
             Message: 'Product updated',

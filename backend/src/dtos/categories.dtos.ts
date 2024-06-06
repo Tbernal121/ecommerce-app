@@ -6,13 +6,13 @@ export class CreateCategoryDto {
   @IsString()
   readonly name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  readonly description: string;
+  readonly description?: string;
 
   @IsOptional()
   @IsString()
   readonly image?: string;
 }
 
-export class UpdateProductDto extends PartialType(CreateCategoryDto) {}
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}

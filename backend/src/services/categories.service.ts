@@ -38,9 +38,9 @@ export class CategoriesService {
         const categorie = this.findOne(id);     
         const index = this.categories.findIndex((item) => item.id === id);
         this.categories[index] = {            
-        ...categorie,
-        ...payload,
-        id: id, // To prevent the user from entering the ID in the body
+            ...categorie,
+            ...payload,
+            id: id, // To prevent the user from entering the ID in the body
         };
         return {
             Message: 'Categorie updated',

@@ -13,7 +13,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getOne(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number){ // the PositiveIntegerPipe would'n be reached
+  getOne(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number){
     return this.productsService.findOne(id);
   }
 

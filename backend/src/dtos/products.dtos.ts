@@ -3,11 +3,6 @@ import { PartialType, OmitType } from '@nestjs/mapped-types'
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {
-  /*@IsNotEmpty()
-  @IsNumber()
-  @IsPositive()
-  readonly id: number;*/
-
   @IsNotEmpty()
   @IsString()
   readonly name: string;
