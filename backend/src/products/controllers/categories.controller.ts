@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, ValidationPipe, UsePipes } from '@nestjs/common';
 import { CategoriesService } from '../services/categories.service';
-import { PositiveIntegerPipe } from '../pipes/positive-integer.pipe';
+import { PositiveIntegerPipe } from './../../pipes/positive-integer.pipe';
 
 @Controller('categories')
 export class CategoriesController {
