@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, ValidationPipe, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  ValidationPipe,
+  UsePipes,
+} from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
 import { PositiveIntegerPipe } from '../../pipes/positive-integer.pipe';
 import { ProductsService } from '../services/products.service';
@@ -13,12 +25,13 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getOne(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number){
+  getOne(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
     return this.productsService.findOne(id);
   }
 
   @Get('filter')
-  getFilter( // In process
+  getFilter(
+    // In process
     @Query('price', ParseIntPipe) price: number = 100,
     @Query('id', ParseIntPipe) id: number = 20,
     @Query('brand') brand: string,
@@ -35,7 +48,10 @@ export class ProductsController {
 
   @Put(':id')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  update(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number, @Body() payload: UpdateProductDto) {
+  update(
+    @Param('id', ParseIntPipe, PositiveIntegerPipe) id: number,
+    @Body() payload: UpdateProductDto,
+  ) {
     return this.productsService.update(id, payload);
   }
 

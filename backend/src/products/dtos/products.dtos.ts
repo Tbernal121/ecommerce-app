@@ -1,5 +1,13 @@
-import { IsString, IsNumber, IsUrl, IsNotEmpty, IsOptional, IsPositive, IsDate } from 'class-validator';
-import { PartialType, OmitType } from '@nestjs/mapped-types'
+import {
+  IsString,
+  IsNumber,
+  IsUrl,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+  IsDate,
+} from 'class-validator';
+import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {
@@ -81,7 +89,9 @@ export class CreateProductDto {
   readonly dateAdded: Date;
 }
 
-export class UpdateProductDto extends PartialType(OmitType(CreateProductDto, ['dateAdded'] as const)) {}
+export class UpdateProductDto extends PartialType(
+  OmitType(CreateProductDto, ['dateAdded'] as const),
+) {}
 
 /*
 export class UpdateProductDto {
