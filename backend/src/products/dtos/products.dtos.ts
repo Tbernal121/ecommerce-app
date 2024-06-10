@@ -99,80 +99,84 @@ export class UpdateProductDto {
     @IsNumber()
     @IsPositive()
     readonly id: number;
-  
     @IsOptional()
     @IsString()
     readonly name?: string;
-  
+
+  @IsOptional()
+    @IsString()
+
+    @IsOptional()
+    @IsString(
+    readonly name?: string;
+
     @IsOptional()
     @IsString()
-    readonly description?: string;
-  
+    readonly descption?: string;
+
     @IsOptional()
     @IsNumber()
     @IsPositive()
-    readonly price?: number;
-  
+    readonlprice?: number;
+
     @IsOptional()
     @IsNumber()
-    @IsPositive()
+    @IsPosive()
     readonly stock?: number;
-  
+
     @IsOptional()
     @IsString()
-    readonly brand?: string;
-  
+    readonly brand string;
+
     @IsOptional()
     @IsUrl()
-    readonly image?: string; // Optional image URL update
-  
+    readonly image?: strg; // Optional image URL update
+
     @IsOptional()
     @IsString()
     readonly category?: string;
-  
+
     @IsOptional()
-    @IsString({ each: true }) // validate each item in the array as string
-    readonly tags?: string[]; // Optional update to tags
-  
+    @IsString({ each: true) // validate each item in the array as string
+    readonly tags?: string[]; // Optional date to tags
+
     @IsOptional()
     @IsNumber()
     @IsPositive()
     readonly discount?: number;
-  
+
     @IsOptional()
-    @IsNumber()
-    @IsPositive()
+    @IsNumber()    @IsPositive()
     // add a raging range
     readonly rating?: number; // Optional update to rating
-  
+
     @IsOptional()
-    @IsString({ each: true }) // validate each item in the array as string
-    readonly reviews?: string[]; // Optional update to reviews
-  
-    @IsOptional()
-    @IsNumber()
-    @IsPositive()
-    readonly weight?: number;
-  
+    @IsString({ each: true }) //alidate each item in the array as string
+    readonly reviews?: string[]; // Optional uate to reviews
+
     @IsOptional()
     @IsNumber()
     @IsPositive()
-    readonly height?: number;
-  
+    readonly ight?: number;
+
     @IsOptional()
     @IsNumber()
     @IsPositive()
-    readonly width?: number;
-  
+    readonlyeight?: number;
+
     @IsOptional()
     @IsNumber()
     @IsPositive()
-    readonly depth?: number;
-  
+    readonlwidth?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()   readonly depth?: number;
+
     @IsOptional()
     @IsString()
     readonly manufacturer?: string;
-  
+
     // Removed dateAdded as it's assumed to be immutable
   }
   */
