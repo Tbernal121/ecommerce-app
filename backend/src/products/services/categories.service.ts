@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Category } from '../entities/category.entity';
 import { faker } from '@faker-js/faker';
-import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/categories.dtos';
+import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dtos';
 
 @Injectable()
 export class CategoriesService {
@@ -21,42 +21,42 @@ export class CategoriesService {
   }
 
   findOne(id: number) {
-    const categorie = this.categories.find((item) => item.id === id);
-    if (!categorie) {
-      throw new NotFoundException(`Categorie with id #${id} not found`);
+    const category = this.categories.find((item) => item.id === id);
+    if (!category) {
+      throw new NotFoundException(`Category with id: #${id} not found`);
     }
-    return categorie;
+    return category;
   }
 
   create(payload: CreateCategoryDto) {
-    const newProduct = {
+    const newCategory = {
       id: ++this.counterId,
       ...payload,
     };
-    this.categories.push(newProduct);
-    return newProduct;
+    this.categories.push(newCategory);
+    return newCategory;
   }
 
   update(id: number, payload: UpdateCategoryDto) {
-    const categorie = this.findOne(id);
+    const category = this.findOne(id);
     const index = this.categories.findIndex((item) => item.id === id);
     this.categories[index] = {
-      ...categorie,
+      ...category,
       ...payload,
       id: id, // To prevent the user from entering the ID in the body
     };
     return {
-      Message: 'Categorie updated',
+      Message: 'Category updated',
       Updated: this.categories[index],
     };
   }
 
-  delete(id: number) {
+  remove(id: number) {
     const index = this.categories.findIndex((item) => item.id === id);
     if (index === -1) {
-      throw new NotFoundException(`Categorie with id #${id} not found`);
+      throw new NotFoundException(`Category with id: #${id} not found`);
     }
     this.categories.splice(index, 1);
-    return `Categorie ${id} deleted`;
+    return `Category ${id} deleted`;
   }
 }

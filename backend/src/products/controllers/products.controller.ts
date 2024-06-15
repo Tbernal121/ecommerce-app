@@ -11,7 +11,7 @@ import {
   ValidationPipe,
   UsePipes,
 } from '@nestjs/common';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
+import { CreateProductDto, UpdateProductDto } from '../dtos/product.dtos';
 import { PositiveIntegerPipe } from '../../pipes/positive-integer.pipe';
 import { ProductsService } from '../services/products.service';
 
@@ -20,12 +20,12 @@ export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
   @Get()
-  getAll() {
+  findAll() {
     return this.productsService.findAll();
   }
 
   @Get(':id')
-  getOne(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
+  get(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
     return this.productsService.findOne(id);
   }
 
@@ -47,7 +47,6 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   update(
     @Param('id', ParseIntPipe, PositiveIntegerPipe) id: number,
     @Body() payload: UpdateProductDto,
@@ -56,7 +55,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
-    return this.productsService.delete(id);
+  remove(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
+    return this.productsService.remove(id);
   }
 }

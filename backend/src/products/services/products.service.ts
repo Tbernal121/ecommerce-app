@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from '../entities/product.entity';
 import { faker } from '@faker-js/faker';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
+import { CreateProductDto, UpdateProductDto } from '../dtos/product.dtos';
 
 @Injectable()
 export class ProductsService {
@@ -70,7 +70,7 @@ export class ProductsService {
     };
   }
 
-  delete(id: number) {
+  remove(id: number) {
     const index = this.products.findIndex((item) => item.id === id);
     if (index === -1) {
       throw new NotFoundException(`Product with id #${id} not found`);
