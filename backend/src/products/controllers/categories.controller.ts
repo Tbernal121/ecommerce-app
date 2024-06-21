@@ -12,7 +12,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { CategoriesService } from '../services/categories.service';
-import { PositiveIntegerPipe } from './../../pipes/positive-integer.pipe';
+import { PositiveIntegerPipe } from '../../common/pipes/positive-integer.pipe';
 import { CreateCategoryDto, UpdateCategoryDto } from './../dtos/category.dtos';
 
 @Controller('categories')

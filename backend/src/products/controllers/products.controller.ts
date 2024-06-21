@@ -12,7 +12,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from '../dtos/product.dtos';
-import { PositiveIntegerPipe } from '../../pipes/positive-integer.pipe';
+import { PositiveIntegerPipe } from '../../common/pipes/positive-integer.pipe';
 import { ProductsService } from '../services/products.service';
 
 @Controller('products')
