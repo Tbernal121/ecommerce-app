@@ -6,16 +6,17 @@ import {
   IsPositive,
   IsNumber,
 } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType, ApiProperty } from '@nestjs/swagger';
 
 export class CreateBrandDto {
   @IsNotEmpty()
   @IsString()
+  @ApiProperty({ description: `brand´s name` })
   readonly name: string;
 
   @IsNotEmpty()
   @IsUrl()
-  readonly image: string; // an url of the image
+  readonly image: string;
 
   @IsOptional()
   @IsUrl()

@@ -1,17 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // 'forbidNonWhitelisted: true':
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Ignore data that doesn't exist in the DTO
-      forbidNonWhitelisted: true, // Throws an error if any non-whitelisted properties are present in the payload
-      //disableErrorMessages: true,       // Disable error messages (production)
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
+  const config = new DocumentBuilder()
+    .setTitle('Ecommerce API')
+    .setDescription('This is the documentation for the Ecommerce API')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('docs', app, document);
+
   await app.listen(3000);
 }
 bootstrap();

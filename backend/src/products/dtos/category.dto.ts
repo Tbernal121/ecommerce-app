@@ -1,13 +1,5 @@
-import {
-  IsString,
-  IsNumber,
-  IsUrl,
-  IsNotEmpty,
-  IsOptional,
-  IsPositive,
-  IsDate,
-} from 'class-validator';
-import { PartialType, OmitType } from '@nestjs/mapped-types';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
   @IsNotEmpty()
