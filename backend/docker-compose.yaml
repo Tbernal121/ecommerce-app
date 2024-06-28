@@ -1,0 +1,19 @@
+services:
+  database-postgres: # Service name, can be any name (usually named after the image being used)
+    image: postgres:16 # Specifies the Docker image and tag to use for this service
+    env_file:
+      - .env # Load environment variables from .env file
+    ports:
+      - '5442:5432' # Maps port 5432 (first one) on the host (outside) to port 5432 (second one) on the container (inside)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # "postgres_data" could be any name, but the rest of
+        # the path should be like this, ("postgresql" changes for every DB)
+
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - .env # Load environment variables from .env file
+    ports:
+      - '5050:80' # pgAdmin runs on port 80 (inside), but the container would listen on the port 5050 (outside)
+volumes:
+  postgres_data: # Defines a Docker volume named "postgres_data" for persistent data storage
