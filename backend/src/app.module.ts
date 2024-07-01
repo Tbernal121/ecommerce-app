@@ -7,6 +7,7 @@ import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import config from './common/config';
 import validationSchema from './common/validation-schema';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import validationSchema from './common/validation-schema';
     }),
     ProductsModule,
     UsersModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
