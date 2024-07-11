@@ -44,25 +44,12 @@ jobs:
           project_id: ${{ vars.GCP_PROJECT_ID }}
           install_components: 'beta'
 
-      - name: Echo variables
-        run: |
-          echo "GCP_PROJECT_ID=${{ vars.GCP_PROJECT_ID }}"
-          echo "GCP_SERVICE_NAME=${{ vars.GCP_SERVICE_NAME }}"
-          echo "GCP_REGION=${{ vars.GCP_REGION }}"
-
       - name: Submit to Cloud Build and Deploy to Cloud Run
-        env:
-          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-          GCP_SERVICE_NAME: ${{ vars.GCP_SERVICE_NAME }}
-          GCP_REGION: ${{ vars.GCP_REGION }}
         run: |
-          echo "GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}"
-          echo "GCP_SERVICE_NAME=${{ env.GCP_SERVICE_NAME }}"
-          echo "GCP_REGION=${{ env.GCP_REGION }}"
-          IMAGE=gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_NAME }}:$GITHUB_SHA
+          IMAGE=gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_SERVICE_NAME }}:$GITHUB_SHA
           gcloud builds submit --tag $IMAGE
-          gcloud run deploy ${{ env.GCP_SERVICE_NAME }} \
+          gcloud run deploy ${{ vars.GCP_SERVICE_NAME }} \
             --image=$IMAGE \
             --platform=managed \
-            --region=${{ env.GCP_REGION }} \
+            --region=${{ vars.GCP_REGION }} \
             --allow-unauthenticated
