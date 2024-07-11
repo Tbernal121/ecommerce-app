@@ -3,7 +3,7 @@ name: Deploy to Google Cloud Run
 on:
   push:
     branches:
-      - main
+      - test-branch
 
 jobs:
   deploy:
@@ -11,15 +11,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -43,11 +44,25 @@ jobs:
           project_id: ${{ vars.GCP_PROJECT_ID }}
           install_components: 'beta'
 
-      - name: Submit to Cloud Build and Deploy to Cloud Run
+      - name: Echo variables
         run: |
-          gcloud builds submit --tag gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_SERVICE_NAME }}:$GITHUB_SHA
-          gcloud run deploy ${{ vars.GCP_SERVICE_NAME }} \
-            --image=gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_SERVICE_NAME }}:$GITHUB_SHA \
+          echo "GCP_PROJECT_ID=${{ vars.GCP_PROJECT_ID }}"
+          echo "GCP_SERVICE_NAME=${{ vars.GCP_SERVICE_NAME }}"
+          echo "GCP_REGION=${{ vars.GCP_REGION }}"
+
+      - name: Submit to Cloud Build and Deploy to Cloud Run
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_SERVICE_NAME: ${{ vars.GCP_SERVICE_NAME }}
+          GCP_REGION: ${{ vars.GCP_REGION }}
+        run: |
+          echo "GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}"
+          echo "GCP_SERVICE_NAME=${{ env.GCP_SERVICE_NAME }}"
+          echo "GCP_REGION=${{ env.GCP_REGION }}"
+          IMAGE=gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_NAME }}:$GITHUB_SHA
+          gcloud builds submit --tag $IMAGE
+          gcloud run deploy ${{ env.GCP_SERVICE_NAME }} \
+            --image=$IMAGE \
             --platform=managed \
-            --region=${{ vars.GCP_REGION }} \
+            --region=${{ env.GCP_REGION }} \
             --allow-unauthenticated
