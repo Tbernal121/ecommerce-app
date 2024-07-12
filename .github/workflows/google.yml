@@ -44,6 +44,11 @@ jobs:
           project_id: ${{ vars.GCP_PROJECT_ID }}
           install_components: 'beta'
 
+      - name: Enable APIs
+        run: |
+          gcloud services enable cloudbuild.googleapis.com
+          gcloud services enable run.googleapis.com
+
       - name: Submit to Cloud Build and Deploy to Cloud Run
         run: |
           IMAGE=gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_SERVICE_NAME }}:$GITHUB_SHA
