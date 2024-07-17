@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 
 import { AppModule } from './app.module';
+import config from './common/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,16 +15,16 @@ async function bootstrap() {
     }),
   );
 
-  const configService = app.get(ConfigService);
+  const configService = app.get<ConfigType<typeof config>>(config.KEY);
 
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('Ecommerce API')
     .setDescription('This is the documentation for the Ecommerce API')
     .setVersion('1.0')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
   app.enableCors();
-  await app.listen(configService.get<string>('PORT') || 3000);
+  await app.listen(configService.port || 3000);
 }
 bootstrap();
