@@ -16,8 +16,8 @@ COPY . .
 # Builds the application
 RUN npm run build
 
-# Exposes port 3000 to make the application accessible
-EXPOSE 3000
+# Exposes port 8080 to make the application accessible
+EXPOSE 8080
 
 # Defines the default command to run the application
 CMD ["npm", "start"]
