@@ -8,11 +8,12 @@ import { UsersModule } from './users/users.module';
 import config from './common/config';
 import validationSchema from './common/validation-schema';
 import { DatabaseModule } from './database/database.module';
+import { environments } from './common/environments';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: environments[process.env.NODE_ENV] || '.env',
       load: [config],
       isGlobal: true,
       validationSchema,

@@ -16,7 +16,7 @@ import config from '../common/config';
           host: configService.database.host,
           database: configService.database.name,
           password: configService.database.password,
-          port: parseInt(configService.database.port, 10),
+          port: configService.database.port,
         });
         await client.connect();
         return client;
