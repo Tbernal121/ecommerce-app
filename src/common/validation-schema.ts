@@ -6,6 +6,7 @@ export default Joi.object({
   POSTGRES_DB: Joi.string().required(),
   POSTGRES_USER: Joi.string().required(),
   POSTGRES_PASSWORD: Joi.string().required(),
+  POSTGRES_SSL: Joi.boolean().required(),
   PORT: Joi.number().required(),
   PGADMIN_DEFAULT_EMAIL: Joi.string().required(),
   PGADMIN_DEFAULT_PASSWORD: Joi.string().required(),

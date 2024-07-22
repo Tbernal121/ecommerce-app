@@ -8,6 +8,7 @@ export default registerAs('config', () => {
       name: process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
+      ssl: process.env.POSTGRES_SSL,
     },
     port: parseInt(process.env.PORT, 10),
   };

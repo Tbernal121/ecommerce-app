@@ -9,14 +9,21 @@ import config from '../common/config';
   imports: [
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigType<typeof config>) => {
+      useFactory: (configService: ConfigService) => {
+        const dbConfig = configService.get<ConfigType<typeof config>>('config');
         return {
           type: 'postgres',
-          host: configService.database.host,
-          port: configService.database.port,
-          username: configService.database.user,
-          password: configService.database.password,
-          database: configService.database.name,
+          host: dbConfig.database.host,
+          port: dbConfig.database.port,
+          username: dbConfig.database.user,
+          password: dbConfig.database.password,
+          database: dbConfig.database.name,
+          ssl:
+            dbConfig.database.ssl === 'true'
+              ? { rejectUnauthorized: false }
+              : false,
+          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+          synchronize: true, // Disable this in production for better control over migrations
         };
       },
     }),
