@@ -1,11 +1,50 @@
-import { Product } from './product.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  BaseEntity,
+} from 'typeorm';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsUUID,
+  IsUrl,
+} from 'class-validator';
 
-export class Brand {
-  id: number;
+@Entity()
+export class Brand extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  @IsUUID()
+  id: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  @IsNotEmpty()
+  @IsString()
   name: string;
-  image: string;
-  website?: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  @IsNotEmpty()
+  @IsString()
+  image: string; // URL of the image
+
+  @Column({ type: 'text', nullable: true })
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  @IsUrl()
+  website?: string;
+
+  @Column('decimal', { precision: 2, scale: 1, nullable: true })
+  @IsOptional()
+  @IsNumber()
   rating?: number;
-  products?: Product[]; // array of associated products (optional)
+
+  @CreateDateColumn({ type: 'timestamp' })
+  dateAdded: Date;
 }
