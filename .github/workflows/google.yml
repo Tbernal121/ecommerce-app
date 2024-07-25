@@ -1,4 +1,4 @@
-name: Deploy to Google Cloud Run
+name: Build and Deploy to Google Cloud Run
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,6 +32,23 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: build/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: build/
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
