@@ -34,8 +34,8 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const product = await this.findOne(id);
-    const updatedProduct = { ...product, ...updateProductDto };
-    return await this.productRepo.save(updatedProduct);
+    this.productRepo.merge(product, updateProductDto);
+    return await this.productRepo.save(product);
   }
 
   async remove(id: string): Promise<void> {
