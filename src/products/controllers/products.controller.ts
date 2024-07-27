@@ -4,28 +4,26 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { CreateProductDto, UpdateProductDto } from '../dtos/product.dto';
-import { PositiveIntegerPipe } from '../../common/pipes/positive-integer.pipe';
+import { Product } from '../entities/product.entity';
 import { ProductsService } from '../services/products.service';
+import { CreateProductDto, UpdateProductDto } from '../dtos/product.dto';
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
-  constructor(private productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
   @ApiOperation({
     summary: 'List all products',
     description: 'Retrieve a list of all products',
   })
-  findAll() {
+  findAll(): Promise<Product[]> {
     return this.productsService.findAll();
   }
 
@@ -34,24 +32,8 @@ export class ProductsController {
     summary: 'Get product by ID',
     description: 'Retrieve a single product by its ID',
   })
-  get(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
+  findOne(@Param('id') id: string): Promise<Product> {
     return this.productsService.findOne(id);
-  }
-
-  @Get('filter')
-  @ApiOperation({
-    summary: 'Filter products',
-    description: 'Filter products based on query parameters',
-  })
-  getFilter(
-    // In process
-    @Query('price', ParseIntPipe) price: number = 100,
-    @Query('id', ParseIntPipe) id: number = 20,
-    @Query('brand') brand: string,
-  ) {
-    return {
-      message: `products: price: ${price} id: ${id} brand: ${brand}`,
-    };
   }
 
   @Post()
@@ -59,8 +41,8 @@ export class ProductsController {
     summary: 'Create product',
     description: 'Create a new product',
   })
-  create(@Body() payload: CreateProductDto) {
-    return this.productsService.create(payload);
+  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+    return this.productsService.create(createProductDto);
   }
 
   @Put(':id')
@@ -69,10 +51,10 @@ export class ProductsController {
     description: 'Update an existing product by its ID',
   })
   update(
-    @Param('id', ParseIntPipe, PositiveIntegerPipe) id: number,
-    @Body() payload: UpdateProductDto,
-  ) {
-    return this.productsService.update(id, payload);
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
+    return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
@@ -80,7 +62,7 @@ export class ProductsController {
     summary: 'Delete product',
     description: 'Delete a product by its ID',
   })
-  remove(@Param('id', ParseIntPipe, PositiveIntegerPipe) id: number) {
+  remove(@Param('id') id: string): Promise<void> {
     return this.productsService.remove(id);
   }
 }
