@@ -41,6 +41,7 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
+
   @Put(':id')
   @ApiOperation({
     summary: 'Update user',

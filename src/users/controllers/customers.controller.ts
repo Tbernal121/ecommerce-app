@@ -1,15 +1,15 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
-  Body,
   Put,
-  Delete,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
+import { Customer } from '../entities/customer.entity';
 import { CustomersService } from '../services/customers.service';
 import { CreateCustomerDto, UpdateCustomerDto } from '../dto/customer.dto';
 
@@ -20,10 +20,10 @@ export class CustomerController {
 
   @Get()
   @ApiOperation({
-    summary: 'List all customers',
+    summary: 'List of customers',
     description: 'Retrieve a list of all customers',
   })
-  findAll() {
+  findAll(): Promise<Customer[]> {
     return this.customersService.findAll();
   }
 
@@ -32,7 +32,7 @@ export class CustomerController {
     summary: 'Get customer by ID',
     description: 'Retrieve a single customer by their ID',
   })
-  get(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string): Promise<Customer> {
     return this.customersService.findOne(id);
   }
 
@@ -41,8 +41,8 @@ export class CustomerController {
     summary: 'Create customer',
     description: 'Create a new customer',
   })
-  create(@Body() payload: CreateCustomerDto) {
-    return this.customersService.create(payload);
+  create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
+    return this.customersService.create(createCustomerDto);
   }
 
   @Put(':id')
@@ -51,10 +51,10 @@ export class CustomerController {
     description: 'Update an existing customer by their ID',
   })
   update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() payload: UpdateCustomerDto,
-  ) {
-    return this.customersService.update(id, payload);
+    @Param('id') id: string,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ): Promise<Customer> {
+    return this.customersService.update(id, updateCustomerDto);
   }
 
   @Delete(':id')
@@ -62,7 +62,7 @@ export class CustomerController {
     summary: 'Delete customer',
     description: 'Delete a customer by their ID',
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') id: string): Promise<void> {
     return this.customersService.remove(id);
   }
 }
