@@ -1,17 +1,17 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
-  Body,
   Put,
-  Delete,
-  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { Brand } from '../entities/brand.entity';
 import { BrandsService } from '../services/brands.service';
-import { CreateBrandDto, UpdateBrandDto } from '../dtos/brand.dto';
+import { CreateBrandDto, UpdateBrandDto } from '../dto/brand.dto';
 
 @ApiTags('Brands')
 @Controller('brands')
@@ -23,7 +23,7 @@ export class BrandsController {
     summary: 'List all brands',
     description: 'Retrieve a list of all brands',
   })
-  findAll() {
+  findAll(): Promise<Brand[]> {
     return this.brandsService.findAll();
   }
 
@@ -32,14 +32,14 @@ export class BrandsController {
     summary: 'Get brand by ID',
     description: 'Retrieve a single brand by its ID',
   })
-  get(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string): Promise<Brand> {
     return this.brandsService.findOne(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create brand', description: 'Create a new brand' })
-  create(@Body() payload: CreateBrandDto) {
-    return this.brandsService.create(payload);
+  create(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {
+    return this.brandsService.create(createBrandDto);
   }
 
   @Put(':id')
@@ -48,10 +48,10 @@ export class BrandsController {
     description: 'Update an existing brand by its ID',
   })
   update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() payload: UpdateBrandDto,
-  ) {
-    return this.brandsService.update(id, payload);
+    @Param('id') id: string,
+    @Body() updateBrandDto: UpdateBrandDto,
+  ): Promise<Brand> {
+    return this.brandsService.update(id, updateBrandDto);
   }
 
   @Delete(':id')
@@ -59,7 +59,7 @@ export class BrandsController {
     summary: 'Delete brand',
     description: 'Delete a brand by its ID',
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.brandsService.remove(+id);
+  remove(@Param('id') id: string): Promise<void> {
+    return this.brandsService.remove(id);
   }
 }
