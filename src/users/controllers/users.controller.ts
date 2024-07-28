@@ -1,15 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Put,
-  Param,
+  Controller,
   Delete,
-  ParseIntPipe,
+  Get,
+  Param,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
+import { User } from '../entities/user.entity';
 import { UsersService } from './../services/users.service';
 import { CreateUserDto, UpdateUserDto } from './../dto/user.dto';
 
@@ -23,7 +23,7 @@ export class UsersController {
     summary: 'List of users',
     description: 'Retrieve a list of all users',
   })
-  findAll() {
+  findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
@@ -32,23 +32,14 @@ export class UsersController {
     summary: 'Get user by ID',
     description: 'Retrieve a single user by their ID',
   })
-  get(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
-  }
-
-  @Get(':id/orders')
-  @ApiOperation({
-    summary: 'Get user orders',
-    description: 'Retrieve all orders for a specific user',
-  })
-  getOrders(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getOrderByUser(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create user', description: 'Create a new user' })
-  create(@Body() payload: CreateUserDto) {
-    return this.usersService.create(payload);
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.usersService.create(createUserDto);
   }
   @Put(':id')
   @ApiOperation({
@@ -56,10 +47,10 @@ export class UsersController {
     description: 'Update an existing user by their ID',
   })
   update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() payload: UpdateUserDto,
-  ) {
-    return this.usersService.update(id, payload);
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -67,7 +58,7 @@ export class UsersController {
     summary: 'Delete user',
     description: 'Delete a user by their ID',
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(+id);
+  remove(@Param('id') id: string): Promise<void> {
+    return this.usersService.remove(id);
   }
 }
