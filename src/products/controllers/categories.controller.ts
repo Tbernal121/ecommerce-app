@@ -12,7 +12,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 import { CategoriesService } from '../services/categories.service';
 import { PositiveIntegerPipe } from '../../common/pipes/positive-integer.pipe';
-import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 
 @ApiTags('Categories')
 @Controller('categories')

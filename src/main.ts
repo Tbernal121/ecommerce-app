@@ -16,10 +16,11 @@ async function bootstrap() {
   );
 
   const configService = app.get<ConfigType<typeof config>>(config.KEY);
-
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Ecommerce API')
-    .setDescription('This is the documentation for the Ecommerce API')
+    .setDescription(
+      'This is the documentation for the Ecommerce API. \n\n[View JSON](./docs-json)',
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
