@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 
 @Entity()
-export class Category extends BaseEntity {
+export class Category {
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   id: string;
@@ -34,7 +34,7 @@ export class Category extends BaseEntity {
   @IsUrl()
   image?: string; // URL of the image
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   dateAdded: Date;
 
   // parentCategory?: Category; // reference to a parent category (optional)

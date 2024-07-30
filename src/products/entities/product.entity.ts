@@ -15,7 +15,7 @@ import {
 } from 'class-validator';
 
 @Entity()
-export class Product extends BaseEntity {
+export class Product {
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   id: string;
@@ -66,16 +66,16 @@ export class Product extends BaseEntity {
   @IsNumber()
   discount?: number;
 
-  @Column('decimal', { precision: 2, scale: 1, nullable: false })
-  @IsNotEmpty()
+  @Column('decimal', { precision: 2, scale: 1, nullable: true })
+  @IsOptional()
   @IsNumber()
-  rating: number;
+  rating?: number;
 
-  @Column('simple-array', { nullable: false })
-  @IsNotEmpty()
+  @Column('simple-array', { nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  reviews: string[];
+  reviews?: string[];
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
   @IsOptional()
@@ -102,6 +102,6 @@ export class Product extends BaseEntity {
   @IsString()
   manufacturer?: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  dateAdded: Date;
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

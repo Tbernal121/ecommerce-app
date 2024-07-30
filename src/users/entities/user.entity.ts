@@ -9,7 +9,7 @@ import {
 import { IsNotEmpty, IsString, IsEmail, IsUUID, Length } from 'class-validator';
 
 @Entity()
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   id: string;
@@ -19,7 +19,7 @@ export class User extends BaseEntity {
   @IsEmail()
   email: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false, select: false })
+  @Column({ type: 'varchar', length: 255, nullable: false, select: false }) // what does this "select" means?
   @IsNotEmpty()
   @IsString()
   @Length(8)
@@ -30,9 +30,9 @@ export class User extends BaseEntity {
   @IsString()
   role: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  dateCreated: Date;
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   dateUpdated: Date;
 }

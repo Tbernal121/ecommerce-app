@@ -24,6 +24,7 @@ import config from '../common/config';
               : false,
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
           synchronize: true, // Disable this in production for better control over migrations
+          autoLoadEntities: true,
         };
       },
     }),

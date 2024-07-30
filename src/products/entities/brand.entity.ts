@@ -15,7 +15,7 @@ import {
 } from 'class-validator';
 
 @Entity()
-export class Brand extends BaseEntity {
+export class Brand {
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   id: string;
@@ -45,6 +45,6 @@ export class Brand extends BaseEntity {
   @IsNumber()
   rating?: number;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   dateAdded: Date;
 }

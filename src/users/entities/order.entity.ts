@@ -15,12 +15,12 @@ enum OrderStatus {
 }
 
 @Entity()
-export class Order extends BaseEntity {
+export class Order {
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   id: string;
 
-  @Column({ type: 'timestamp', nullable: false })
+  @Column({ type: 'timestamptz', nullable: false })
   @IsNotEmpty()
   @IsDate()
   date: Date;
@@ -33,8 +33,8 @@ export class Order extends BaseEntity {
   @IsEnum(OrderStatus)
   status: OrderStatus;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  dateCreated: Date;
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
 
   // user: User;
   // products: Product[];

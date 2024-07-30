@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 
 @Entity()
-export class Customer extends BaseEntity {
+export class Customer {
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   id: string;
@@ -39,6 +39,6 @@ export class Customer extends BaseEntity {
   @IsEmail()
   email: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   dateAdded: Date;
 }
