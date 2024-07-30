@@ -1,19 +1,42 @@
 services:
-  database-postgres: # Service name, can be any name (usually named after the image being used)
+  ecommerce-postgres-db: # Service name, can be any name (usually named after the image being used)
+    container_name: ecommerce-postgres-db # For easier identification and management
     image: postgres:16 # Specifies the Docker image and tag to use for this service
-    env_file:
-      - .env # Load environment variables from .env file
+    restart: unless-stopped # Containers restart automatically unless explicitly stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: ${TZ}
     ports:
-      - '5442:5432' # Maps port 5432 (first one) on the host (outside) to port 5432 (second one) on the container (inside)
+      - '${DB_PORT}:5432' # Maps port DB_PORT on the host (outside) to port 5432 (second one) on the container (inside)
     volumes:
-      - postgres_data:/var/lib/postgresql/data # "postgres_data" could be any name, but the rest of
-        # the path should be like this, ("postgresql" changes for every DB)
+      - postgres_data:/var/lib/postgresql/data # Persist database data in a named volume
+    networks:
+      - ecommerce-postgres-network # Connects the service to a custom network
 
   pgadmin:
+    container_name: pgadmin # For easier identification and management
     image: dpage/pgadmin4
-    env_file:
-      - .env # Load environment variables from .env file
+    restart: unless-stopped # Containers restart automatically unless explicitly stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASSWORD}
     ports:
-      - '5050:80' # pgAdmin runs on port 80 (inside), but the container would listen on the port 5050 (outside)
+      - '${PG_ADMIN_PORT}:80' # Maps port PG_ADMIN_PORT on the host (outside) to port 80 on the container (inside)
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin # Persist pgAdmin data in a named volume
+    depends_on:
+      - ecommerce-postgres-db # Ensures pgAdmin starts after the ecommerce-postgres-db service
+    networks:
+      - ecommerce-postgres-network # Connects the service to a custom network
+
+networks:
+  ecommerce-postgres-network: # Defines a custom network for the services
+    driver: bridge # Uses the bridge network driver, which creates an isolated network for the containers
+
 volumes:
   postgres_data: # Defines a Docker volume named "postgres_data" for persistent data storage
+    driver: local # Uses the local storage driver to store data on the host filesystem. Could be nfs too
+  pgadmin_data: # Defines a Docker volume named "pgadmin_data" for persistent data storage
+    driver: local # Uses the local storage driver to store data on the host filesystem. Could be nfs too

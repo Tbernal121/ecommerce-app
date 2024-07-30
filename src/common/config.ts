@@ -3,13 +3,14 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('config', () => {
   return {
     database: {
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT, 10),
-      name: process.env.POSTGRES_DB,
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      ssl: process.env.POSTGRES_SSL,
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      name: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      ssl: process.env.DB_SSL,
     },
     port: parseInt(process.env.PORT, 10),
+    tz: process.env.TZ,
   };
 });
