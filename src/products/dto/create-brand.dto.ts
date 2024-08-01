@@ -6,12 +6,14 @@ import {
   IsPositive,
   IsNumber,
 } from 'class-validator';
-import { PartialType, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBrandDto {
+import { IBrand } from '../interfaces/brand.interface';
+
+export class CreateBrandDto implements IBrand {
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ description: `brand´s name` })
+  @ApiProperty({ description: "Brand's name" })
   readonly name: string;
 
   @IsNotEmpty()
@@ -31,5 +33,3 @@ export class CreateBrandDto {
   @IsPositive()
   readonly rating?: number;
 }
-
-export class UpdateBrandDto extends PartialType(CreateBrandDto) {}

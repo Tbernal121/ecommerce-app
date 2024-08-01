@@ -1,23 +1,25 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import {
   IsNotEmpty,
   IsString,
   IsOptional,
   IsNumber,
-  IsUUID,
   IsUrl,
+  Max,
+  Min,
 } from 'class-validator';
 
+import { IBrand } from '../interfaces/brand.interface';
+
 @Entity()
-export class Brand {
+export class Brand implements IBrand {
   @PrimaryGeneratedColumn('uuid')
-  @IsUUID()
   id: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
@@ -43,8 +45,13 @@ export class Brand {
   @Column('decimal', { precision: 2, scale: 1, nullable: true })
   @IsOptional()
   @IsNumber()
+  @Min(0)
+  @Max(5)
   rating?: number;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  dateAdded: Date;
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 }

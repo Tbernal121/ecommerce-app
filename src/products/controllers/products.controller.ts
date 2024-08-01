@@ -11,7 +11,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Product } from '../entities/product.entity';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
+import { CreateProductDto } from '../dto/create-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
 
 @ApiTags('Products')
 @Controller('products')
