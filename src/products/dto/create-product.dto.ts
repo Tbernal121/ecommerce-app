@@ -5,12 +5,13 @@ import {
   IsNotEmpty,
   IsOptional,
   IsPositive,
-  IsDate,
+  Min,
+  Max,
 } from 'class-validator';
-import { PartialType, OmitType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 
-export class CreateProductDto {
+import { IProduct } from '../interfaces/product.interface';
+
+export class CreateProductDto implements IProduct {
   @IsNotEmpty()
   @IsString()
   readonly name: string;
@@ -38,7 +39,7 @@ export class CreateProductDto {
   readonly image: string;
 
   @IsNotEmpty()
-  @IsString({ each: true })
+  @IsString()
   readonly category: string;
 
   @IsOptional()
@@ -50,15 +51,15 @@ export class CreateProductDto {
   @IsPositive()
   readonly discount?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  @IsPositive()
-  // add a raging range
-  readonly rating: number;
+  @Min(0)
+  @Max(5)
+  readonly rating?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString({ each: true })
-  readonly reviews: string[];
+  readonly reviews?: string[];
 
   @IsOptional()
   @IsNumber()
@@ -83,12 +84,4 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   readonly manufacturer?: string;
-
-  @IsDate()
-  @Type(() => Date)
-  readonly dateAdded: Date;
 }
-
-export class UpdateProductDto extends PartialType(
-  OmitType(CreateProductDto, ['dateAdded'] as const),
-) {}

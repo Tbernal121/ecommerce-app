@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  BaseEntity,
+  UpdateDateColumn,
 } from 'typeorm';
 import {
   IsNotEmpty,
@@ -11,13 +11,15 @@ import {
   IsNumber,
   IsOptional,
   IsArray,
-  IsUUID,
+  Min,
+  Max,
 } from 'class-validator';
 
+import { IProduct } from '../interfaces/product.interface';
+
 @Entity()
-export class Product {
+export class Product implements IProduct {
   @PrimaryGeneratedColumn('uuid')
-  @IsUUID()
   id: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
@@ -69,6 +71,8 @@ export class Product {
   @Column('decimal', { precision: 2, scale: 1, nullable: true })
   @IsOptional()
   @IsNumber()
+  @Min(0)
+  @Max(5)
   rating?: number;
 
   @Column('simple-array', { nullable: true })
@@ -104,4 +108,7 @@ export class Product {
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 }
