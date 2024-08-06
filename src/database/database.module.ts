@@ -10,20 +10,21 @@ import config from '../common/config';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const dbConfig = configService.get<ConfigType<typeof config>>('config');
+        const envConfig =
+          configService.get<ConfigType<typeof config>>('config');
         return {
           type: 'postgres',
-          host: dbConfig.database.host,
-          port: dbConfig.database.port,
-          username: dbConfig.database.user,
-          password: dbConfig.database.password,
-          database: dbConfig.database.name,
+          host: envConfig.database.host,
+          port: envConfig.database.port,
+          username: envConfig.database.user,
+          password: envConfig.database.password,
+          database: envConfig.database.name,
           ssl:
-            dbConfig.database.ssl === 'true'
+            envConfig.database.ssl === 'true'
               ? { rejectUnauthorized: false }
               : false,
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: true, // Disable this in production for better control over migrations
+          synchronize: false, // Disable this in production (and all environments) for better control over migrations
           autoLoadEntities: true,
         };
       },
