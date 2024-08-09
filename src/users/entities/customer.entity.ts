@@ -2,27 +2,29 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  BaseEntity,
   CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import {
   IsNotEmpty,
   IsString,
   IsEmail,
   IsPhoneNumber,
-  IsUUID,
+  IsArray,
 } from 'class-validator';
+
+import { User } from './user.entity';
 
 @Entity()
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
-  @IsUUID()
   id: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   @IsNotEmpty()
   @IsString()
-  name: string;
+  firstName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   @IsNotEmpty()
@@ -39,6 +41,18 @@ export class Customer {
   @IsEmail()
   email: string;
 
+  @Column({ type: 'simple-array' })
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  address: string[];
+
   @CreateDateColumn({ type: 'timestamptz' })
-  dateAdded: Date;
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
+
+  @OneToOne(() => User, (user) => user.customer, { nullable: true })
+  user?: User;
 }

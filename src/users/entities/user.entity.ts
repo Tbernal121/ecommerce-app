@@ -2,16 +2,18 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
-import { IsNotEmpty, IsString, IsEmail, IsUUID, Length } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
+
+import { Customer } from './customer.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  @IsUUID()
   id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
@@ -19,7 +21,7 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false, select: false }) // what does this "select" means?
+  @Column({ type: 'varchar', length: 255, nullable: false, select: false })
   @IsNotEmpty()
   @IsString()
   @Length(8)
@@ -34,5 +36,9 @@ export class User {
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  dateUpdated: Date;
+  updatedAt: Date;
+
+  @OneToOne(() => Customer, (customer) => customer.user, { nullable: true })
+  @JoinColumn()
+  customer?: Customer;
 }
