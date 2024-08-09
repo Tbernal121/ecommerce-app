@@ -4,6 +4,8 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 import {
   IsNotEmpty,
@@ -16,6 +18,7 @@ import {
 } from 'class-validator';
 
 import { IProduct } from '../interfaces/product.interface';
+import { Brand } from './brand.entity';
 
 @Entity()
 export class Product implements IProduct {
@@ -45,17 +48,7 @@ export class Product implements IProduct {
   @Column({ type: 'varchar', length: 255, nullable: false })
   @IsNotEmpty()
   @IsString()
-  brand: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  @IsNotEmpty()
-  @IsString()
   image: string; // URL of the image
-
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  @IsNotEmpty()
-  @IsString()
-  category: string;
 
   @Column('simple-array', { nullable: true })
   @IsOptional()
@@ -106,9 +99,12 @@ export class Product implements IProduct {
   @IsString()
   manufacturer?: string;
 
-  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @ManyToOne(() => Brand, (brand) => brand.products)
+  brand: Brand;
 }

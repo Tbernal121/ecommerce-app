@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -16,6 +17,7 @@ import {
 } from 'class-validator';
 
 import { IBrand } from '../interfaces/brand.interface';
+import { Product } from './product.entity';
 
 @Entity()
 export class Brand implements IBrand {
@@ -54,4 +56,7 @@ export class Brand implements IBrand {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @OneToMany(() => Product, (product) => product.brand)
+  products: Product[];
 }

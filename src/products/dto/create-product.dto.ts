@@ -31,16 +31,8 @@ export class CreateProductDto implements IProduct {
   readonly stock: number;
 
   @IsNotEmpty()
-  @IsString()
-  readonly brand: string;
-
-  @IsNotEmpty()
   @IsUrl()
   readonly image: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly category: string;
 
   @IsOptional()
   @IsString({ each: true })
@@ -82,6 +74,11 @@ export class CreateProductDto implements IProduct {
   readonly depth?: number;
 
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   readonly manufacturer?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly brandId: string;
 }
