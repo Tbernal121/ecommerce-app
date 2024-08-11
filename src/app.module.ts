@@ -9,6 +9,7 @@ import config from './common/config';
 import validationSchema from './common/validation-schema';
 import { DatabaseModule } from './database/database.module';
 import { environments } from './common/environments';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { environments } from './common/environments';
     ProductsModule,
     UsersModule,
     DatabaseModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
 } from 'typeorm';
-import { IsNotEmpty, IsDate, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsDate, IsEnum, IsNumber } from 'class-validator';
 
-import { OrderStatusEnum } from './enum/order-status.enum';
+import { OrderStatusEnum } from '../enum/order-status.enum';
+import { OrderProduct } from 'src/order/entities/order-product.entity';
 
 @Entity()
 export class Order {
@@ -27,9 +29,17 @@ export class Order {
   @IsEnum(OrderStatusEnum)
   status: OrderStatusEnum;
 
+  @Column('decimal', { precision: 10, scale: 2, nullable: false })
+  @IsNotEmpty()
+  @IsNumber()
+  totalPrice: number;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.order)
+  products: OrderProduct[];
 }
