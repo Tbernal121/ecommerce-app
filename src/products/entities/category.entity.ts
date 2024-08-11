@@ -2,21 +2,18 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  BaseEntity,
   CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-import {
-  IsNotEmpty,
-  IsString,
-  IsOptional,
-  IsUrl,
-  IsUUID,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
+
+import { Product } from './product.entity';
 
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn('uuid')
-  @IsUUID()
   id: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
@@ -29,15 +26,18 @@ export class Category {
   @IsString()
   description?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  @IsOptional()
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  @IsNotEmpty()
   @IsUrl()
-  image?: string; // URL of the image
+  image: string; // URL of the image
 
   @CreateDateColumn({ type: 'timestamptz' })
-  dateAdded: Date;
+  createdAt: Date;
 
-  // parentCategory?: Category; // reference to a parent category (optional)
-  // subCategories?: Category[]; // array of subcategories (optional)
-  // products?: Product[]; // array of associated products (optional)
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
+
+  @ManyToMany(() => Product, (product) => product.categories)
+  @JoinTable()
+  products: Product[];
 }

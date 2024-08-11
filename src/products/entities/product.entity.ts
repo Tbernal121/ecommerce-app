@@ -19,6 +19,7 @@ import {
 
 import { IProduct } from '../interfaces/product.interface';
 import { Brand } from './brand.entity';
+import { Category } from './category.entity';
 
 @Entity()
 export class Product implements IProduct {
@@ -107,4 +108,7 @@ export class Product implements IProduct {
 
   @ManyToOne(() => Brand, (brand) => brand.products)
   brand: Brand;
+
+  @ManyToMany(() => Category, (category) => category.products)
+  categories: Category[];
 }

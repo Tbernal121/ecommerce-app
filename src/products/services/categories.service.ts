@@ -4,12 +4,15 @@ import { In, Repository } from 'typeorm';
 
 import { Category } from '../entities/category.entity';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
+import { ProductsService } from './products.service';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
+
+    private readonly productsService: ProductsService,
   ) {}
 
   async findAll(): Promise<Category[]> {
@@ -34,15 +37,31 @@ export class CategoriesService {
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const newCategory = this.categoryRepo.create(createCategoryDto);
+
+    if (createCategoryDto.productsIds) {
+      const products = await this.productsService.findByIds(
+        createCategoryDto.productsIds,
+      );
+      newCategory.products = products;
+    }
+
     return await this.categoryRepo.save(newCategory);
   }
 
   async update(
     id: string,
-    updateCategoryDtoayload: UpdateCategoryDto,
+    updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
     const category = await this.findOne(id);
-    this.categoryRepo.merge(category, updateCategoryDtoayload);
+
+    if (updateCategoryDto.productsIds) {
+      const products = await this.productsService.findByIds(
+        updateCategoryDto.productsIds,
+      );
+      category.products = products;
+    }
+
+    this.categoryRepo.merge(category, updateCategoryDto);
     return await this.categoryRepo.save(category);
   }
 

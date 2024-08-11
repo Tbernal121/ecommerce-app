@@ -7,6 +7,7 @@ import {
   IsPositive,
   Min,
   Max,
+  IsArray,
 } from 'class-validator';
 
 import { IProduct } from '../interfaces/product.interface';
@@ -81,4 +82,9 @@ export class CreateProductDto implements IProduct {
   @IsNotEmpty()
   @IsString()
   readonly brandId: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  readonly categoriesIds: string[];
 }
