@@ -6,20 +6,15 @@ import {
   UpdateDateColumn,
   ManyToMany,
 } from 'typeorm';
-import { IsNotEmpty, IsDate, IsEnum, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
 
 import { OrderStatusEnum } from '../enum/order-status.enum';
-import { OrderProduct } from 'src/order/entities/order-product.entity';
+import { OrderProduct } from './order-product.entity';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column({ type: 'timestamptz', nullable: false })
-  @IsNotEmpty()
-  @IsDate()
-  orderDate: Date;
 
   @Column({
     type: 'enum',

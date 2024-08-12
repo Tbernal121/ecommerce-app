@@ -19,7 +19,7 @@ import {
 
 import { IProduct } from '../interfaces/product.interface';
 import { Brand } from './brand.entity';
-import { OrderProduct } from 'src/order/entities/order-product.entity';
+import { OrderProduct } from '../../order/entities/order-product.entity';
 import { Category } from './category.entity';
 
 @Entity()
