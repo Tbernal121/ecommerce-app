@@ -21,23 +21,30 @@ export class CategoriesService {
     private readonly productsService: ProductsService,
   ) {}
 
-  async findAll(): Promise<Category[]> {
-    return await this.categoryRepo.find();
+  async findAll(relations: string[] = []): Promise<Category[]> {
+    return await this.categoryRepo.find({ relations: relations });
   }
 
-  async findOne(id: string): Promise<Category> {
-    const category = await this.categoryRepo.findOne({ where: { id } });
+  async findOne(id: string, relations: string[] = []): Promise<Category> {
+    const category = await this.categoryRepo.findOne({
+      where: { id },
+      relations,
+    });
     if (!category) {
-      throw new NotFoundException(`Category with id: #${id} not found`);
+      throw new NotFoundException(`Category with id: ${id} not found`);
     }
     return category;
   }
 
-  async findByIds(ids: string[]): Promise<Category[]> {
+  async findByIds(
+    ids: string[],
+    relations: string[] = [],
+  ): Promise<Category[]> {
     return this.categoryRepo.find({
       where: {
         id: In(ids),
       },
+      relations,
     });
   }
 

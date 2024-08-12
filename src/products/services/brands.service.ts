@@ -12,14 +12,17 @@ export class BrandsService {
     @InjectRepository(Brand) private readonly brandRepo: Repository<Brand>,
   ) {}
 
-  async findAll(): Promise<Brand[]> {
-    return await this.brandRepo.find();
+  async findAll(relations: string[] = []): Promise<Brand[]> {
+    return await this.brandRepo.find({ relations: relations });
   }
 
-  async findOne(id: string): Promise<Brand> {
-    const brand = await this.brandRepo.findOne({ where: { id } });
+  async findOne(id: string, relations: string[] = []): Promise<Brand> {
+    const brand = await this.brandRepo.findOne({
+      where: { id },
+      relations,
+    });
     if (!brand) {
-      throw new NotFoundException(`Brand with id: #${id} not found`);
+      throw new NotFoundException(`Brand with id: ${id} not found`);
     }
     return brand;
   }

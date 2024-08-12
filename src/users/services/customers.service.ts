@@ -12,14 +12,17 @@ export class CustomersService {
     private readonly customerRepo: Repository<Customer>,
   ) {}
 
-  async findAll(): Promise<Customer[]> {
-    return await this.customerRepo.find();
+  async findAll(relations: string[] = []): Promise<Customer[]> {
+    return await this.customerRepo.find({ relations: relations });
   }
 
-  async findOne(id: string): Promise<Customer> {
-    const customer = await this.customerRepo.findOne({ where: { id } });
+  async findOne(id: string, relations: string[] = []): Promise<Customer> {
+    const customer = await this.customerRepo.findOne({
+      where: { id },
+      relations,
+    });
     if (!customer) {
-      throw new NotFoundException(`Customer with id #${id} not found`);
+      throw new NotFoundException(`Customer with id ${id} not found`);
     }
     return customer;
   }
