@@ -58,6 +58,18 @@ export class ProductsController {
     return this.productsService.update(id, updateProductDto);
   }
 
+  @Put(':id/category/:categoryId')
+  @ApiOperation({
+    summary: 'Add category to product',
+    description: 'Add a category to a product by its ID',
+  })
+  addCategoryByProduct(
+    @Param('id') id: string,
+    @Param('categoryId') categoryId: string,
+  ): Promise<Product> {
+    return this.productsService.addCategoryByProduct(id, categoryId);
+  }
+
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete product',
@@ -65,5 +77,17 @@ export class ProductsController {
   })
   remove(@Param('id') id: string): Promise<void> {
     return this.productsService.remove(id);
+  }
+
+  @Delete(':id/category/:categoryId')
+  @ApiOperation({
+    summary: 'Remove category from product',
+    description: 'Remove a category from a product by its ID',
+  })
+  removeCategoryByProduct(
+    @Param('id') id: string,
+    @Param('categoryId') categoryId: string,
+  ): Promise<Product> {
+    return this.productsService.removeCategoryByProduct(id, categoryId);
   }
 }
