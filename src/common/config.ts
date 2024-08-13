@@ -9,6 +9,7 @@ export default registerAs('config', () => {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       ssl: process.env.DB_SSL,
+      logging: process.env.DB_LOGGING,
     },
     port: parseInt(process.env.PORT, 10),
     tz: process.env.TZ,
