@@ -10,7 +10,7 @@ import { In, Repository } from 'typeorm';
 import { Category } from '../category/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ProductService } from '../products/product.service';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class CategoryService {

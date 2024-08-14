@@ -9,14 +9,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
-import { User } from '../entities/user.entity';
-import { UsersService } from './../services/users.service';
-import { CreateUserDto, UpdateUserDto } from './../dto/user.dto';
+import { User } from './user.entity';
+import { UserService } from './user.service';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
-@ApiTags('Users')
-@Controller('users')
-export class UsersController {
-  constructor(private usersService: UsersService) {}
+@ApiTags('User')
+@Controller('user')
+export class UserController {
+  constructor(private userService: UserService) {}
 
   @Get()
   @ApiOperation({
@@ -24,7 +24,7 @@ export class UsersController {
     description: 'Retrieve a list of all users',
   })
   findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+    return this.userService.findAll();
   }
 
   @Get(':id')
@@ -33,13 +33,13 @@ export class UsersController {
     description: 'Retrieve a single user by their ID',
   })
   findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findOne(id);
+    return this.userService.findOne(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create user', description: 'Create a new user' })
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+    return this.userService.create(createUserDto);
   }
 
   @Put(':id')
@@ -51,7 +51,7 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.usersService.update(id, updateUserDto);
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -60,6 +60,6 @@ export class UsersController {
     description: 'Delete a user by their ID',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.usersService.remove(id);
+    return this.userService.remove(id);
   }
 }

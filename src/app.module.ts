@@ -8,8 +8,8 @@ import { CategoryModule } from './category/category.module';
 import { CustomerModule } from './customer/customer.module';
 import { DatabaseModule } from './database/database.module';
 import { OrderModule } from './order/order.module';
-import { ProductModule } from './products/product.module';
-import { UsersModule } from './users/users.module';
+import { ProductModule } from './product/product.module';
+import { UserModule } from './user/user.module';
 import config from './common/config';
 import validationSchema from './common/validation-schema';
 import { environments } from './common/environments';
@@ -23,7 +23,7 @@ import { environments } from './common/environments';
       validationSchema,
     }),
     ProductModule,
-    UsersModule,
+    UserModule,
     DatabaseModule,
     OrderModule,
     BrandModule,

@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
 
-import { Customer } from '../../customer/customer.entity';
+import { Customer } from '../customer/customer.entity';
 
 @Entity()
 export class User {

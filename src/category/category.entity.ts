@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
 
-import { Product } from '../products/product.entity';
+import { Product } from '../product/product.entity';
 
 @Entity()
 //@Tree('closure-table')

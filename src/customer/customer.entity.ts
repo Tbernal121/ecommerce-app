@@ -14,7 +14,7 @@ import {
   IsArray,
 } from 'class-validator';
 
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Customer {
