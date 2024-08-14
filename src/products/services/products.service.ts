@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -10,7 +11,7 @@ import { In, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
-import { BrandsService } from './brands.service';
+import { BrandService } from '../../brand/brand.service';
 import { CategoriesService } from './categories.service';
 
 @Injectable()
@@ -22,7 +23,7 @@ export class ProductsService {
     @Inject(forwardRef(() => CategoriesService))
     private readonly categoryService: CategoriesService,
 
-    private readonly brandService: BrandsService,
+    private readonly brandService: BrandService,
   ) {}
 
   async findAll(relations: string[] = []): Promise<Product[]> {

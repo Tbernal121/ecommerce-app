@@ -16,8 +16,8 @@ import {
   Min,
 } from 'class-validator';
 
-import { IBrand } from '../interfaces/brand.interface';
-import { Product } from './product.entity';
+import { IBrand } from './interfaces/brand.interface';
+import { Product } from '../products/entities/product.entity';
 
 @Entity()
 export class Brand implements IBrand {

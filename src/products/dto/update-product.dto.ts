@@ -1,5 +1,12 @@
-import { PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsArray, IsOptional } from 'class-validator';
 
 import { CreateProductDto } from './create-product.dto';
+import { Category } from '../entities/category.entity';
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {}
+export class UpdateProductDto extends PartialType(CreateProductDto) {
+  @IsArray()
+  @IsOptional()
+  @ApiProperty()
+  readonly categoriesIdsToDelete?: Category['id'][];
+}

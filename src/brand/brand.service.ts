@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Brand } from '../entities/brand.entity';
-import { CreateBrandDto } from '../dto/create-brand.dto';
-import { UpdateBrandDto } from '../dto/update-brand.dto';
+import { Brand } from './brand.entity';
+import { CreateBrandDto } from './dto/create-brand.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 
 @Injectable()
-export class BrandsService {
+export class BrandService {
   constructor(
     @InjectRepository(Brand) private readonly brandRepo: Repository<Brand>,
   ) {}

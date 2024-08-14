@@ -9,15 +9,15 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { Brand } from '../entities/brand.entity';
-import { BrandsService } from '../services/brands.service';
-import { CreateBrandDto } from '../dto/create-brand.dto';
-import { UpdateBrandDto } from '../dto/update-brand.dto';
+import { Brand } from './brand.entity';
+import { BrandService } from './brand.service';
+import { CreateBrandDto } from './dto/create-brand.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 
-@ApiTags('Brands')
-@Controller('brands')
-export class BrandsController {
-  constructor(private readonly brandsService: BrandsService) {}
+@ApiTags('Brand')
+@Controller('brand')
+export class BrandController {
+  constructor(private readonly brandService: BrandService) {}
 
   @Get()
   @ApiOperation({
@@ -25,7 +25,7 @@ export class BrandsController {
     description: 'Retrieve a list of all brands',
   })
   findAll(): Promise<Brand[]> {
-    return this.brandsService.findAll();
+    return this.brandService.findAll();
   }
 
   @Get(':id')
@@ -34,13 +34,13 @@ export class BrandsController {
     description: 'Retrieve a single brand by its ID',
   })
   findOne(@Param('id') id: string): Promise<Brand> {
-    return this.brandsService.findOne(id);
+    return this.brandService.findOne(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create brand', description: 'Create a new brand' })
   create(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {
-    return this.brandsService.create(createBrandDto);
+    return this.brandService.create(createBrandDto);
   }
 
   @Put(':id')
@@ -52,7 +52,7 @@ export class BrandsController {
     @Param('id') id: string,
     @Body() updateBrandDto: UpdateBrandDto,
   ): Promise<Brand> {
-    return this.brandsService.update(id, updateBrandDto);
+    return this.brandService.update(id, updateBrandDto);
   }
 
   @Delete(':id')
@@ -61,6 +61,6 @@ export class BrandsController {
     description: 'Delete a brand by its ID',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.brandsService.remove(id);
+    return this.brandService.remove(id);
   }
 }

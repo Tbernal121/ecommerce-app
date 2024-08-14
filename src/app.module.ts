@@ -10,6 +10,7 @@ import validationSchema from './common/validation-schema';
 import { DatabaseModule } from './database/database.module';
 import { environments } from './common/environments';
 import { OrderModule } from './order/order.module';
+import { BrandModule } from './brand/brand.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { OrderModule } from './order/order.module';
     UsersModule,
     DatabaseModule,
     OrderModule,
+    BrandModule,
   ],
   controllers: [AppController],
   providers: [AppService],
