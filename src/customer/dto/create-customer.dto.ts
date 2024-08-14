@@ -18,5 +18,3 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   readonly email: string;
 }
-
-export class UpdateCustomerDto extends PartialType(CreateCustomerDto) {}

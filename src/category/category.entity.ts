@@ -12,6 +12,7 @@ import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
 import { Product } from '../products/product.entity';
 
 @Entity()
+//@Tree('closure-table')
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -40,4 +41,12 @@ export class Category {
   @ManyToMany(() => Product, (product) => product.categories)
   @JoinTable()
   products: Product[];
+
+  /*// parentCategory?: Category; // reference to a parent category (optional)
+  @TreeParent()
+  parentCategory?: Category;
+
+  // subCategories?: Category[]; // array of subcategories (optional)
+  @TreeChildren()
+  subCategories?: Category[];*/
 }

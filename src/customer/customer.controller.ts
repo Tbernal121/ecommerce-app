@@ -9,14 +9,15 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
-import { Customer } from '../entities/customer.entity';
-import { CustomersService } from '../services/customers.service';
-import { CreateCustomerDto, UpdateCustomerDto } from '../dto/customer.dto';
+import { Customer } from './customer.entity';
+import { CustomerService } from './customer.service';
+import { CreateCustomerDto } from './dto/create-customer.dto';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
-@ApiTags('Customers')
-@Controller('customers')
+@ApiTags('Customer')
+@Controller('customer')
 export class CustomerController {
-  constructor(private customersService: CustomersService) {}
+  constructor(private customerService: CustomerService) {}
 
   @Get()
   @ApiOperation({
@@ -24,7 +25,7 @@ export class CustomerController {
     description: 'Retrieve a list of all customers',
   })
   findAll(): Promise<Customer[]> {
-    return this.customersService.findAll();
+    return this.customerService.findAll();
   }
 
   @Get(':id')
@@ -33,7 +34,7 @@ export class CustomerController {
     description: 'Retrieve a single customer by their ID',
   })
   findOne(@Param('id') id: string): Promise<Customer> {
-    return this.customersService.findOne(id);
+    return this.customerService.findOne(id);
   }
 
   @Post()
@@ -42,7 +43,7 @@ export class CustomerController {
     description: 'Create a new customer',
   })
   create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    return this.customersService.create(createCustomerDto);
+    return this.customerService.create(createCustomerDto);
   }
 
   @Put(':id')
@@ -54,7 +55,7 @@ export class CustomerController {
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    return this.customersService.update(id, updateCustomerDto);
+    return this.customerService.update(id, updateCustomerDto);
   }
 
   @Delete(':id')
@@ -63,6 +64,6 @@ export class CustomerController {
     description: 'Delete a customer by their ID',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.customersService.remove(id);
+    return this.customerService.remove(id);
   }
 }

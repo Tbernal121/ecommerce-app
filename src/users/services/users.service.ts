@@ -4,13 +4,13 @@ import { Repository } from 'typeorm';
 
 import { User } from '../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
-import { CustomersService } from './customers.service';
+import { CustomerService } from '../../customer/customer.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
-    private readonly customerService: CustomersService,
+    private readonly customerService: CustomerService,
   ) {}
 
   async findAll(relations: string[] = []): Promise<User[]> {
