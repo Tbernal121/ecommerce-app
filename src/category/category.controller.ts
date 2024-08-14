@@ -9,14 +9,15 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
-import { Category } from '../entities/category.entity';
-import { CategoriesService } from '../services/categories.service';
-import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
+import { Category } from './category.entity';
+import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@ApiTags('Categories')
-@Controller('categories')
-export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+@ApiTags('Category')
+@Controller('category')
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
   @ApiOperation({
@@ -24,7 +25,7 @@ export class CategoriesController {
     description: 'Retrieve a list of all categories',
   })
   findAll(): Promise<Category[]> {
-    return this.categoriesService.findAll();
+    return this.categoryService.findAll();
   }
 
   @Get(':id')
@@ -33,7 +34,7 @@ export class CategoriesController {
     description: 'Retrieve a single category by its ID',
   })
   findOne(@Param('id') id: string): Promise<Category> {
-    return this.categoriesService.findOne(id);
+    return this.categoryService.findOne(id);
   }
 
   @Post()
@@ -42,7 +43,7 @@ export class CategoriesController {
     description: 'Create a new category',
   })
   create(@Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
-    return this.categoriesService.create(createCategoryDto);
+    return this.categoryService.create(createCategoryDto);
   }
 
   @Put(':id')
@@ -54,7 +55,7 @@ export class CategoriesController {
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
-    return this.categoriesService.update(id, updateCategoryDto);
+    return this.categoryService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
@@ -63,6 +64,6 @@ export class CategoriesController {
     description: 'Delete a category by its ID',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.categoriesService.remove(id);
+    return this.categoryService.remove(id);
   }
 }

@@ -9,7 +9,7 @@ import {
 import { IsNumber, IsNotEmpty, Min } from 'class-validator';
 
 import { Order } from './order.entity';
-import { Product } from '../../products/entities/product.entity';
+import { Product } from '../../products/product.entity';
 
 @Entity()
 export class OrderProduct {

@@ -7,18 +7,19 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
-import { Category } from '../entities/category.entity';
-import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
-import { ProductsService } from './products.service';
+import { Category } from '../category/category.entity';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ProductService } from '../products/product.service';
 
 @Injectable()
-export class CategoriesService {
+export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
 
-    @Inject(forwardRef(() => ProductsService))
-    private readonly productsService: ProductsService,
+    @Inject(forwardRef(() => ProductService))
+    private readonly productsService: ProductService,
   ) {}
 
   async findAll(relations: string[] = []): Promise<Category[]> {

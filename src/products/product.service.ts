@@ -8,20 +8,20 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
-import { Product } from '../entities/product.entity';
-import { CreateProductDto } from '../dto/create-product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
-import { BrandService } from '../../brand/brand.service';
-import { CategoriesService } from './categories.service';
+import { Product } from './product.entity';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { BrandService } from '../brand/brand.service';
+import { CategoryService } from '../category/category.service';
 
 @Injectable()
-export class ProductsService {
+export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
 
-    @Inject(forwardRef(() => CategoriesService))
-    private readonly categoryService: CategoriesService,
+    @Inject(forwardRef(() => CategoryService))
+    private readonly categoryService: CategoryService,
 
     private readonly brandService: BrandService,
   ) {}
@@ -86,8 +86,38 @@ export class ProductsService {
       product.categories = categories;
     }
 
+    /*
+    if (updateProductDto.categoriesIdsToDelete) {
+      product.categories = await this.removeCategoryByProduct(
+        product,
+        updateProductDto.categoriesIdsToDelete,
+      );
+    }
+    if (updateProductDto.categoriesIds) {
+      product.categories = await this.addCategoryByProduct(
+        product,
+        updateProductDto.categoriesIds,
+      );
+    }*/
+
     this.productRepo.merge(product, updateProductDto);
     return await this.productRepo.save(product);
+  }
+
+  async addCategoryByProduct1(id: string, categoryId: string) {
+    const product = await this.findOne(id, ['categories']);
+    const category = await this.categoryService.findOne(categoryId);
+
+    // check if the product already has the category
+    if (!product.categories.find((item) => item.id == categoryId)) {
+      product.categories.push(category);
+    } else {
+      throw new ConflictException(
+        `Category with id ${categoryId} is already present in this product`,
+      );
+    }
+
+    return this.productRepo.save(product);
   }
 
   async addCategoryByProduct(id: string, categoryId: string) {

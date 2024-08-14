@@ -17,10 +17,10 @@ import {
   Max,
 } from 'class-validator';
 
-import { IProduct } from '../interfaces/product.interface';
-import { Brand } from './brand.entity';
-import { OrderProduct } from '../../order/entities/order-product.entity';
-import { Category } from './category.entity';
+import { IProduct } from './interfaces/product.interface';
+import { Brand } from '../brand/brand.entity';
+import { OrderProduct } from '../order/entities/order-product.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
 export class Product implements IProduct {

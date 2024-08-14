@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
 
-import { Product } from './product.entity';
+import { Product } from '../products/product.entity';
 
 @Entity()
 export class Category {

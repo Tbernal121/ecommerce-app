@@ -5,7 +5,6 @@ import {
   IsUrl,
   IsArray,
 } from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
   @IsNotEmpty()
@@ -25,5 +24,3 @@ export class CreateCategoryDto {
   @IsString({ each: true })
   readonly productsIds: string[];
 }
-
-export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
