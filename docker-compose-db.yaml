@@ -1,39 +1,48 @@
+version: '3.8'
+
 services:
   ecommerce-postgres-db: # Service name, can be any name (usually named after the image being used)
     container_name: ecommerce-postgres-db # For easier identification and management
-    image: postgres:16 # Specifies the Docker image and tag to use for this service
-    restart: unless-stopped # Containers restart automatically unless explicitly stopped
+    image: postgres:16-alpine # Specifies the Docker image and tag to use for this service. Using a smaller Alpine-based image for reduced size and faster startup
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
       TZ: ${TZ}
     ports:
-      - '${DB_PORT}:5432' # Maps port DB_PORT on the host (outside) to port 5432 (second one) on the container (inside)
+      - '${DB_PORT}:5432' # Maps port DB_PORT on the host (outside) to port 5432 (second one) inside the container (inside)
     volumes:
       - postgres_data:/var/lib/postgresql/data # Persist database data in a named volume
     networks:
-      - ecommerce-postgres-network # Connects the service to a custom network
+      - ecommerce-postgres-network # Connects the service to a custom network, isolating it from other services not on the same network
+    healthcheck: # To ensure the service is running properly
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}'] # Command to check if the database is ready
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped # Automatically restart containers unless they are stopped manually
 
-  pgadmin:
-    container_name: pgadmin # For easier identification and management
-    image: dpage/pgadmin4
-    restart: unless-stopped # Containers restart automatically unless explicitly stopped
+  ecommerce-postgres-pgadmin:
+    container_name: ecommerce-postgres-pgadmin # For easier identification and management
+    image: dpage/pgadmin4:8.10 # Stable version of pgAdmin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASSWORD}
     ports:
-      - '${PG_ADMIN_PORT}:80' # Maps port PG_ADMIN_PORT on the host (outside) to port 80 on the container (inside)
+      - '${PG_ADMIN_PORT}:80' # Maps port PG_ADMIN_PORT on the host (outside) to port 80 (inside the container)
     volumes:
-      - pgadmin_data:/var/lib/pgadmin # Persist pgAdmin data in a named volume
+      - pgadmin_data:/var/lib/pgadmin # Persist pgAdmin data in a named volume, ensuring settings aren't lost when the container stops
     depends_on:
-      - ecommerce-postgres-db # Ensures pgAdmin starts after the ecommerce-postgres-db service
+      ecommerce-postgres-db:
+        condition: service_healthy # Ensures pgAdmin starts only after the ecommerce-postgres-db service is healthy
     networks:
       - ecommerce-postgres-network # Connects the service to a custom network
+    restart: unless-stopped # Automatically restart containers unless they are stopped manually
 
 networks:
   ecommerce-postgres-network: # Defines a custom network for the services
-    driver: bridge # Uses the bridge network driver, which creates an isolated network for the containers
+    driver: bridge
 
 volumes:
   postgres_data: # Defines a Docker volume named "postgres_data" for persistent data storage
