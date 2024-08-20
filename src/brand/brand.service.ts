@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Brand } from './brand.entity';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { brandSeedData } from './data/brands.data';
 
 @Injectable()
 export class BrandService {
@@ -41,5 +42,17 @@ export class BrandService {
   async remove(id: string): Promise<void> {
     const product = await this.findOne(id);
     await this.brandRepo.delete(id);
+  }
+
+  async seed() {
+    for (const brandData of brandSeedData) {
+      const existingBrand = await this.brandRepo.findOne({
+        where: { name: brandData.name },
+      });
+      if (!existingBrand) {
+        const brand = this.brandRepo.create(brandData);
+        await this.brandRepo.save(brand);
+      }
+    }
   }
 }
