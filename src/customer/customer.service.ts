@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Customer } from './customer.entity';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { customerSeedData } from './data/customer.data';
 
 @Injectable()
 export class CustomerService {
@@ -45,5 +46,17 @@ export class CustomerService {
   async remove(id: string): Promise<void> {
     const customer = await this.findOne(id);
     await this.customerRepo.delete(id);
+  }
+
+  async seed() {
+    for (const customerData of customerSeedData) {
+      const existingCustomer = await this.customerRepo.findOne({
+        where: { email: customerData.email },
+      });
+      if (!existingCustomer) {
+        const customer = this.customerRepo.create(customerData);
+        await this.customerRepo.save(customer);
+      }
+    }
   }
 }
