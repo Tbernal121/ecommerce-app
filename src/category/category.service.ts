@@ -11,6 +11,7 @@ import { Category } from '../category/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ProductService } from '../product/product.service';
+import { categorySeedData } from './data/category.data';
 
 @Injectable()
 export class CategoryService {
@@ -82,5 +83,17 @@ export class CategoryService {
   async remove(id: string): Promise<void> {
     const product = await this.findOne(id);
     await this.categoryRepo.delete(id);
+  }
+
+  async seed() {
+    for (const categoryData of categorySeedData) {
+      const existingCategory = await this.categoryRepo.findOne({
+        where: { name: categoryData.name },
+      });
+      if (!existingCategory) {
+        const category = this.categoryRepo.create(categoryData);
+        await this.categoryRepo.save(category);
+      }
+    }
   }
 }

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Brand } from './brand.entity';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { brandSeedData } from './data/brands.data';
+import { brandSeedData } from './data/brand.data';
 
 @Injectable()
 export class BrandService {

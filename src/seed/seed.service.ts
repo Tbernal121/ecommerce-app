@@ -20,7 +20,7 @@ export class SeedService {
 
   async runSeed() {
     await this.brandService.seed();
-    // this.CategoryService.seed();
+    await this.CategoryService.seed();
     // this.customersService.seed();
     // this.ordersService.seed();
     // this.productsService.seed();
