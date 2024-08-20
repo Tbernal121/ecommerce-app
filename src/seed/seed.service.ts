@@ -24,6 +24,6 @@ export class SeedService {
     await this.customersService.seed();
     // this.ordersService.seed();
     await this.productsService.seed();
-    // this.usersService.seed();
+    await this.usersService.seed();
   }
 }
