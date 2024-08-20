@@ -13,6 +13,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { BrandService } from '../brand/brand.service';
 import { CategoryService } from '../category/category.service';
+import { productSeedData } from './data/product.data';
 
 @Injectable()
 export class ProductService {
@@ -138,5 +139,17 @@ export class ProductService {
   async remove(id: string): Promise<void> {
     const product = await this.findOne(id);
     await this.productRepo.delete(id);
+  }
+
+  async seed() {
+    for (const productData of productSeedData) {
+      const existingProduct = await this.productRepo.findOne({
+        where: { name: productData.name },
+      });
+      if (!existingProduct) {
+        const product = this.productRepo.create(productData);
+        await this.productRepo.save(product);
+      }
+    }
   }
 }

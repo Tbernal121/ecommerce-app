@@ -23,7 +23,7 @@ export class SeedService {
     await this.CategoryService.seed();
     await this.customersService.seed();
     // this.ordersService.seed();
-    // this.productsService.seed();
+    await this.productsService.seed();
     // this.usersService.seed();
   }
 }
