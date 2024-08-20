@@ -7,9 +7,10 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, Length, IsEnum } from 'class-validator';
 
 import { Customer } from '../customer/customer.entity';
+import { UserRole } from './enum/role.enum';
 
 @Entity()
 export class User {
@@ -27,10 +28,10 @@ export class User {
   @Length(8)
   password: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'enum', nullable: false })
   @IsNotEmpty()
-  @IsString()
-  role: string;
+  @IsEnum(UserRole)
+  role: UserRole;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

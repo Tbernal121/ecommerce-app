@@ -4,8 +4,11 @@ import {
   IsEmail,
   Length,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
+
+import { UserRole } from '../enum/role.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -20,7 +23,8 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly role: string;
+  @IsEnum(UserRole)
+  readonly role: UserRole;
 
   @IsOptional()
   @IsString()
