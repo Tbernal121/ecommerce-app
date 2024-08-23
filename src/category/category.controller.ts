@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
@@ -24,8 +25,9 @@ export class CategoryController {
     summary: 'List all categories',
     description: 'Retrieve a list of all categories',
   })
-  findAll(): Promise<Category[]> {
-    return this.categoryService.findAll();
+  findAll(@Query('relations') relations?: string): Promise<Category[]> {
+    const parsedRelations = relations ? relations.split(',') : [];
+    return this.categoryService.findAll(parsedRelations);
   }
 
   @Get(':id')

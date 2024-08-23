@@ -19,6 +19,7 @@ export class CreateCategoryDto {
   @IsUrl()
   readonly image: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsArray()
   @IsString({ each: true })
