@@ -28,7 +28,7 @@ export class User {
   @Length(8)
   password: string;
 
-  @Column({ type: 'enum', nullable: false })
+  @Column({ type: 'enum', enum: UserRole, nullable: false })
   @IsNotEmpty()
   @IsEnum(UserRole)
   role: UserRole;
