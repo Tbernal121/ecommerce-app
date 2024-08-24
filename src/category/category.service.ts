@@ -42,12 +42,23 @@ export class CategoryService {
     ids: string[],
     relations: string[] = [],
   ): Promise<Category[]> {
-    return this.categoryRepo.find({
+    const categories = await this.categoryRepo.find({
       where: {
         id: In(ids),
       },
       relations,
     });
+
+    const foundIds = categories.map((category) => category.id);
+    const missingIds = ids.filter((id) => !foundIds.includes(id));
+
+    if (missingIds.length > 0) {
+      throw new NotFoundException(
+        `Categories with the following ids not found: ${missingIds.join(', ')}`,
+      );
+    }
+
+    return categories;
   }
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {

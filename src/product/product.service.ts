@@ -43,12 +43,23 @@ export class ProductService {
   }
 
   async findByIds(ids: string[], relations: string[] = []): Promise<Product[]> {
-    return this.productRepo.find({
+    const products = await this.productRepo.find({
       where: {
         id: In(ids),
       },
       relations,
     });
+
+    const foundIds = products.map((product) => product.id);
+    const missingIds = ids.filter((id) => !foundIds.includes(id));
+
+    if (missingIds.length > 0) {
+      throw new NotFoundException(
+        `Products with the following ids not found: ${missingIds.join(', ')}`,
+      );
+    }
+
+    return products;
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -118,7 +129,7 @@ export class ProductService {
       );
     }
 
-    return this.productRepo.save(product);
+    return await this.productRepo.save(product);
   }
 
   async addCategoryByProduct(id: string, categoryId: string) {
