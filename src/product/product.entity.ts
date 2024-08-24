@@ -107,12 +107,18 @@ export class Product implements IProduct {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Brand, (brand) => brand.products)
+  @ManyToOne(() => Brand, (brand) => brand.products, {
+    onDelete: 'SET NULL',
+  })
   brand: Brand;
 
-  @ManyToMany(() => Category, (category) => category.products)
+  @ManyToMany(() => Category, (category) => category.products, {
+    onDelete: 'CASCADE',
+  })
   categories: Category[];
 
-  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.product)
+  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.product, {
+    onDelete: 'RESTRICT',
+  })
   orders: OrderProduct[];
 }
