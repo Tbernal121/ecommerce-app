@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -24,8 +25,9 @@ export class ProductController {
     summary: 'List all product',
     description: 'Retrieve a list of all product',
   })
-  findAll(): Promise<Product[]> {
-    return this.productService.findAll();
+  findAll(@Query('relations') relations?: string): Promise<Product[]> {
+    const parsedRelations = relations ? relations.split(',') : [];
+    return this.productService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -33,8 +35,12 @@ export class ProductController {
     summary: 'Get product by ID',
     description: 'Retrieve a single product by its ID',
   })
-  findOne(@Param('id') id: string): Promise<Product> {
-    return this.productService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Query('relations') relations?: string,
+  ): Promise<Product> {
+    const parsedRelations = relations ? relations.split(',') : [];
+    return this.productService.findOne(id, parsedRelations);
   }
 
   @Post()

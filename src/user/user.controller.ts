@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
@@ -23,8 +24,9 @@ export class UserController {
     summary: 'List of users',
     description: 'Retrieve a list of all users',
   })
-  findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  findAll(@Query('relations') relations?: string): Promise<User[]> {
+    const parsedRelations = relations ? relations.split(',') : [];
+    return this.userService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -32,8 +34,12 @@ export class UserController {
     summary: 'Get user by ID',
     description: 'Retrieve a single user by their ID',
   })
-  findOne(@Param('id') id: string): Promise<User> {
-    return this.userService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Query('relations') relations?: string,
+  ): Promise<User> {
+    const parsedRelations = relations ? relations.split(',') : [];
+    return this.userService.findOne(id, parsedRelations);
   }
 
   @Post()

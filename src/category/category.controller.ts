@@ -35,8 +35,12 @@ export class CategoryController {
     summary: 'Get category by ID',
     description: 'Retrieve a single category by its ID',
   })
-  findOne(@Param('id') id: string): Promise<Category> {
-    return this.categoryService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Query('relations') relations?: string,
+  ): Promise<Category> {
+    const parsedRelations = relations ? relations.split(',') : [];
+    return this.categoryService.findOne(id, parsedRelations);
   }
 
   @Post()
