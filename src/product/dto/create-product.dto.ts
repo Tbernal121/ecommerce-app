@@ -79,12 +79,14 @@ export class CreateProductDto implements IProduct {
   @IsString()
   readonly manufacturer?: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
-  readonly brandId: string;
+  readonly brandId?: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsArray()
   @IsString({ each: true })
-  readonly categoriesIds: string[];
+  readonly categoriesIds?: string[];
 }

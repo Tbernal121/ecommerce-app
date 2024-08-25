@@ -108,6 +108,7 @@ export class Product implements IProduct {
   updatedAt: Date;
 
   @ManyToOne(() => Brand, (brand) => brand.products, {
+    nullable: true,
     onDelete: 'SET NULL',
   })
   brand: Brand;
@@ -118,6 +119,7 @@ export class Product implements IProduct {
   categories: Category[];
 
   @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.product, {
+    cascade: true,
     onDelete: 'RESTRICT',
   })
   orders: OrderProduct[];

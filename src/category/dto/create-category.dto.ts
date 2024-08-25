@@ -23,5 +23,5 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   @IsArray()
   @IsString({ each: true })
-  readonly productsIds: string[];
+  readonly productsIds?: string[];
 }

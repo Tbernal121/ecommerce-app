@@ -38,7 +38,9 @@ export class Category {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToMany(() => Product, (product) => product.categories)
+  @ManyToMany(() => Product, (product) => product.categories, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   products: Product[];
 
