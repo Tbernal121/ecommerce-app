@@ -33,9 +33,15 @@ export class OrderProduct {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Order, (order) => order.products, { nullable: false })
+  @ManyToOne(() => Order, (order) => order.products, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   order: Order;
 
-  @ManyToOne(() => Product, (product) => product.orders, { nullable: false })
+  @ManyToOne(() => Product, (product) => product.orders, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
   product: Product;
 }

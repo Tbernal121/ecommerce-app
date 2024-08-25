@@ -35,6 +35,8 @@ export class Order {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.order)
+  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
+    cascade: true,
+  })
   products: OrderProduct[];
 }
