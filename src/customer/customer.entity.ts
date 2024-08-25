@@ -53,6 +53,9 @@ export class Customer {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @OneToOne(() => User, (user) => user.customer, { nullable: true })
+  @OneToOne(() => User, (user) => user.customer, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   user?: User;
 }
