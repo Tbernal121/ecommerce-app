@@ -17,4 +17,46 @@ export const productSeedData = [
     tags: ['books', 'literature'],
     rating: 4.8,
   },
+  {
+    name: 'Bluetooth Smart Speaker',
+    description:
+      'A portable Bluetooth speaker with excellent sound quality and long battery life.',
+    price: 129.99,
+    stock: 150,
+    image: 'https://example.com/images/bluetooth-smart-speaker.png',
+    brandId: 'brand789',
+    categoriesIds: ['category001', 'category005'],
+    tags: ['electronics', 'audio'],
+    discount: 15,
+    rating: 4.4,
+    reviews: [
+      'Amazing sound quality, very clear and crisp.',
+      'Battery lasts all day. Highly recommended!',
+    ],
+    weight: 1.2,
+    height: 10.5,
+    width: 6.3,
+    depth: 5.7,
+    manufacturer: 'SoundTech Inc.',
+  },
+  {
+    name: 'Smart Thermostat',
+    description:
+      'An intelligent thermostat that learns your preferences and helps save energy.',
+    price: 249.99,
+    stock: 75,
+    image: 'https://example.com/images/smart-thermostat.png',
+    tags: ['electronics', 'home'],
+    rating: 4.6,
+  },
+  {
+    name: 'Gaming Laptop',
+    description:
+      'A powerful gaming laptop with a high-refresh-rate display and advanced cooling system.',
+    price: 1499.99,
+    stock: 30,
+    image: 'https://example.com/images/gaming-laptop.png',
+    tags: ['electronics', 'gaming'],
+    rating: 4.9,
+  },
 ];
