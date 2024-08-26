@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import {
   IsNotEmpty,
@@ -118,7 +119,7 @@ export class Product implements IProduct {
   })
   categories: Category[];
 
-  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.product, {
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.product, {
     cascade: true,
     onDelete: 'RESTRICT',
   })

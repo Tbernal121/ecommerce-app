@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
 
@@ -35,8 +35,8 @@ export class Order {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
-    cascade: true,
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
+    eager: true,
   })
   products: OrderProduct[];
 }
