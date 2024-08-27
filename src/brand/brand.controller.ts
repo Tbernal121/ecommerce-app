@@ -25,7 +25,7 @@ export class BrandController {
     summary: 'List all brands',
     description: 'Retrieve a list of all brands',
   })
-  findAll(@Query('relations') relations?: string): Promise<Brand[]> {
+  async findAll(@Query('relations') relations?: string): Promise<Brand[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.brandService.findAll(parsedRelations);
   }
@@ -35,7 +35,7 @@ export class BrandController {
     summary: 'Get brand by ID',
     description: 'Retrieve a single brand by its ID',
   })
-  findOne(
+  async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<Brand> {
@@ -45,7 +45,7 @@ export class BrandController {
 
   @Post()
   @ApiOperation({ summary: 'Create brand', description: 'Create a new brand' })
-  create(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {
+  async create(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {
     return this.brandService.create(createBrandDto);
   }
 
@@ -54,7 +54,7 @@ export class BrandController {
     summary: 'Update brand',
     description: 'Update an existing brand by its ID',
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateBrandDto: UpdateBrandDto,
   ): Promise<Brand> {
@@ -66,7 +66,7 @@ export class BrandController {
     summary: 'Delete brand',
     description: 'Delete a brand by its ID',
   })
-  remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.brandService.remove(id);
   }
 }

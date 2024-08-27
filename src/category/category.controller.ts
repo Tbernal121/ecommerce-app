@@ -25,7 +25,7 @@ export class CategoryController {
     summary: 'List all categories',
     description: 'Retrieve a list of all categories',
   })
-  findAll(@Query('relations') relations?: string): Promise<Category[]> {
+  async findAll(@Query('relations') relations?: string): Promise<Category[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.categoryService.findAll(parsedRelations);
   }
@@ -35,7 +35,7 @@ export class CategoryController {
     summary: 'Get category by ID',
     description: 'Retrieve a single category by its ID',
   })
-  findOne(
+  async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<Category> {
@@ -48,7 +48,9 @@ export class CategoryController {
     summary: 'Create category',
     description: 'Create a new category',
   })
-  create(@Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
     return this.categoryService.create(createCategoryDto);
   }
 
@@ -57,7 +59,7 @@ export class CategoryController {
     summary: 'Update category',
     description: 'Update an existing category by its ID',
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
@@ -69,7 +71,7 @@ export class CategoryController {
     summary: 'Delete category',
     description: 'Delete a category by its ID',
   })
-  remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.categoryService.remove(id);
   }
 }

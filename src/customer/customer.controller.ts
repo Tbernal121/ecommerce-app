@@ -25,7 +25,7 @@ export class CustomerController {
     summary: 'List of customers',
     description: 'Retrieve a list of all customers',
   })
-  findAll(@Query('relations') relations?: string): Promise<Customer[]> {
+  async findAll(@Query('relations') relations?: string): Promise<Customer[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.customerService.findAll(parsedRelations);
   }
@@ -35,7 +35,7 @@ export class CustomerController {
     summary: 'Get customer by ID',
     description: 'Retrieve a single customer by their ID',
   })
-  findOne(
+  async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<Customer> {
@@ -48,7 +48,9 @@ export class CustomerController {
     summary: 'Create customer',
     description: 'Create a new customer',
   })
-  create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
+  async create(
+    @Body() createCustomerDto: CreateCustomerDto,
+  ): Promise<Customer> {
     return this.customerService.create(createCustomerDto);
   }
 
@@ -57,7 +59,7 @@ export class CustomerController {
     summary: 'Update customer',
     description: 'Update an existing customer by their ID',
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
@@ -69,7 +71,7 @@ export class CustomerController {
     summary: 'Delete customer',
     description: 'Delete a customer by their ID',
   })
-  remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.customerService.remove(id);
   }
 }

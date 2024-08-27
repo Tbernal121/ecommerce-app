@@ -25,7 +25,7 @@ export class ProductController {
     summary: 'List all product',
     description: 'Retrieve a list of all product',
   })
-  findAll(@Query('relations') relations?: string): Promise<Product[]> {
+  async findAll(@Query('relations') relations?: string): Promise<Product[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.productService.findAll(parsedRelations);
   }
@@ -35,7 +35,7 @@ export class ProductController {
     summary: 'Get product by ID',
     description: 'Retrieve a single product by its ID',
   })
-  findOne(
+  async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<Product> {
@@ -48,7 +48,7 @@ export class ProductController {
     summary: 'Create product',
     description: 'Create a new product',
   })
-  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+  async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
     return this.productService.create(createProductDto);
   }
 
@@ -57,7 +57,7 @@ export class ProductController {
     summary: 'Update product',
     description: 'Update an existing product by its ID',
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Product> {
@@ -69,7 +69,7 @@ export class ProductController {
     summary: 'Add categories to a product',
     description: 'Add one or more categories to a product by its ID',
   })
-  addCategoriesByProduct(
+  async addCategoriesByProduct(
     @Param('id') id: string,
     @Body('categoryIds') categoryIds: string[],
   ): Promise<Product> {
@@ -81,7 +81,7 @@ export class ProductController {
     summary: 'Delete product',
     description: 'Delete a product by its ID',
   })
-  remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.productService.remove(id);
   }
 
@@ -90,7 +90,7 @@ export class ProductController {
     summary: 'Remove categories from a product',
     description: 'Remove one or more categories from a product by its ID',
   })
-  removeCategoriesByProduct(
+  async removeCategoriesByProduct(
     @Param('id') id: string,
     @Body('categoryIds') categoryIds: string[],
   ): Promise<Product> {

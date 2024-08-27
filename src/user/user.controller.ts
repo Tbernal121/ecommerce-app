@@ -24,7 +24,7 @@ export class UserController {
     summary: 'List of users',
     description: 'Retrieve a list of all users',
   })
-  findAll(@Query('relations') relations?: string): Promise<User[]> {
+  async findAll(@Query('relations') relations?: string): Promise<User[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.userService.findAll(parsedRelations);
   }
@@ -34,7 +34,7 @@ export class UserController {
     summary: 'Get user by ID',
     description: 'Retrieve a single user by their ID',
   })
-  findOne(
+  async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<User> {
@@ -44,7 +44,7 @@ export class UserController {
 
   @Post()
   @ApiOperation({ summary: 'Create user', description: 'Create a new user' })
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
@@ -53,7 +53,7 @@ export class UserController {
     summary: 'Update user',
     description: 'Update an existing user by their ID',
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
@@ -65,7 +65,7 @@ export class UserController {
     summary: 'Delete user',
     description: 'Delete a user by their ID',
   })
-  remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.userService.remove(id);
   }
 }
