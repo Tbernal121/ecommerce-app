@@ -1,8 +1,11 @@
 import {
+  BadRequestException,
   ConflictException,
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -116,35 +119,76 @@ export class ProductService {
     return await this.productRepo.save(product);
   }
 
-  async addCategoryByProduct1(id: string, categoryId: string) {
-    const product = await this.findOne(id, ['categories']);
-    const category = await this.categoryService.findOne(categoryId);
+  async addCategoriesByProduct(id: string, categoryIds: string[]) {
+    try {
+      if (!id || !categoryIds || categoryIds.length === 0) {
+        throw new BadRequestException(
+          'Product ID and Category IDs must be provided',
+        );
+      }
 
-    // check if the product already has the category
-    if (!product.categories.find((item) => item.id == categoryId)) {
-      product.categories.push(category);
-    } else {
-      throw new ConflictException(
-        `Category with id ${categoryId} is already present in this product`,
+      const [product, categories] = await Promise.all([
+        this.findOne(id, ['categories']),
+        this.categoryService.findByIds(categoryIds),
+      ]);
+      const existingCategoryIds = new Set(
+        product.categories.map((category) => category.id),
+      );
+      const newCategories = categories.filter(
+        (category) => !existingCategoryIds.has(category.id),
+      );
+
+      if (newCategories.length === 0) {
+        throw new ConflictException(
+          `All provided categories are already associated with this product`,
+        );
+      }
+
+      product.categories.push(...newCategories);
+      return await this.productRepo.save(product);
+    } catch (error) {
+      Logger.error(
+        `Failed to add categories to product: ${error.message}`,
+        error.stack,
+      );
+
+      throw new InternalServerErrorException(
+        `Failed to add categories to product: ${error.message}`,
       );
     }
-
-    return await this.productRepo.save(product);
   }
 
-  async addCategoryByProduct(id: string, categoryId: string) {
-    const product = await this.findOne(id, ['categories']);
-    const category = await this.categoryService.findOne(categoryId);
-    product.categories.push(category);
-    return await this.productRepo.save(product);
-  }
+  async removeCategoriesByProduct(id: string, categoryIds: string[]) {
+    try {
+      if (!id || !categoryIds || categoryIds.length === 0) {
+        throw new BadRequestException(
+          'Product ID and Category IDs must be provided',
+        );
+      }
 
-  async removeCategoryByProduct(id: string, categoryId: string) {
-    const product = await this.findOne(id, ['categories']);
-    product.categories = product.categories.filter(
-      (category) => category.id !== categoryId,
-    );
-    return await this.productRepo.save(product);
+      const product = await this.findOne(id, ['categories']);
+      const existingCategoryIds = new Set(
+        product.categories.map((category) => category.id),
+      );
+      const categoriesToRemove = categoryIds.filter((id) =>
+        existingCategoryIds.has(id),
+      );
+
+      if (categoriesToRemove.length === 0) {
+        throw new ConflictException(
+          `None of the provided categories are associated with this product.`,
+        );
+      }
+
+      product.categories = product.categories.filter(
+        (category) => !categoriesToRemove.includes(category.id),
+      );
+      return await this.productRepo.save(product);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to remove categories from a product: ${error.message}`,
+      );
+    }
   }
 
   async remove(id: string): Promise<void> {
