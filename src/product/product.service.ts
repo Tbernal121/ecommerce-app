@@ -87,36 +87,44 @@ export class ProductService {
     id: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const product = await this.findOne(id);
+    try {
+      const [product, brand] = await Promise.all([
+        this.findOne(id, ['brand', 'categories']),
+        updateProductDto.brandId
+          ? this.brandService.findOne(updateProductDto.brandId)
+          : null,
+      ]);
 
-    if (updateProductDto.brandId) {
-      const brand = await this.brandService.findOne(updateProductDto.brandId);
-      product.brand = brand;
-    }
+      if (updateProductDto.categoriesIdsToAdd) {
+        await this.addCategoriesByProduct(
+          product,
+          updateProductDto.categoriesIdsToAdd,
+        );
+      }
 
-    if (updateProductDto.categoriesIds) {
-      const categories = await this.categoryService.findByIds(
-        updateProductDto.categoriesIds,
+      if (updateProductDto.categoriesIdsToDelete) {
+        await this.removeCategoriesByProduct(
+          product,
+          updateProductDto.categoriesIdsToDelete,
+        );
+      }
+
+      if (updateProductDto.hasOwnProperty('brandId')) {
+        if (updateProductDto.brandId === null) {
+          product.brand = null;
+        } else if (brand) {
+          product.brand = brand;
+        }
+      }
+
+      this.productRepo.merge(product, updateProductDto);
+      return await this.productRepo.save(product);
+    } catch (error) {
+      Logger.error(`Failed to update product: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(
+        `Failed to update product: ${error.message}`,
       );
-      product.categories = categories;
     }
-
-    /*
-    if (updateProductDto.categoriesIdsToDelete) {
-      product.categories = await this.removeCategoryByProduct(
-        product,
-        updateProductDto.categoriesIdsToDelete,
-      );
-    }
-    if (updateProductDto.categoriesIds) {
-      product.categories = await this.addCategoryByProduct(
-        product,
-        updateProductDto.categoriesIds,
-      );
-    }*/
-
-    this.productRepo.merge(product, updateProductDto);
-    return await this.productRepo.save(product);
   }
 
   async addCategoriesByProduct(product: Product, categoryIds: string[]) {
