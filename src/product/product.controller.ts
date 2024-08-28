@@ -14,6 +14,7 @@ import { Product } from './product.entity';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ValidateUUIDsArrayPipe } from '../common/pipes/uuids-array.pipe';
 
 @ApiTags('Product')
 @Controller('product')
@@ -71,9 +72,10 @@ export class ProductController {
   })
   async addCategoriesByProduct(
     @Param('id') id: string,
-    @Body('categoryIds') categoryIds: string[],
+    @Body('categoryIds', ValidateUUIDsArrayPipe) categoryIds: string[],
   ): Promise<Product> {
-    return this.productService.addCategoriesByProduct(id, categoryIds);
+    const product = await this.productService.findOne(id, ['categories']);
+    return this.productService.addCategoriesByProduct(product, categoryIds);
   }
 
   @Delete(':id')
@@ -92,8 +94,9 @@ export class ProductController {
   })
   async removeCategoriesByProduct(
     @Param('id') id: string,
-    @Body('categoryIds') categoryIds: string[],
+    @Body('categoryIds', ValidateUUIDsArrayPipe) categoryIds: string[],
   ): Promise<Product> {
-    return this.productService.removeCategoriesByProduct(id, categoryIds);
+    const product = await this.productService.findOne(id, ['categories']);
+    return this.productService.removeCategoriesByProduct(product, categoryIds);
   }
 }

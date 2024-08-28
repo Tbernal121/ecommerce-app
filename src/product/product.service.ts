@@ -119,18 +119,13 @@ export class ProductService {
     return await this.productRepo.save(product);
   }
 
-  async addCategoriesByProduct(id: string, categoryIds: string[]) {
+  async addCategoriesByProduct(product: Product, categoryIds: string[]) {
     try {
-      if (!id || !categoryIds || categoryIds.length === 0) {
-        throw new BadRequestException(
-          'Product ID and Category IDs must be provided',
-        );
+      if (categoryIds.length === 0) {
+        throw new BadRequestException('Category IDs must be provided');
       }
 
-      const [product, categories] = await Promise.all([
-        this.findOne(id, ['categories']),
-        this.categoryService.findByIds(categoryIds),
-      ]);
+      const categories = await this.categoryService.findByIds(categoryIds);
       const existingCategoryIds = new Set(
         product.categories.map((category) => category.id),
       );
@@ -158,15 +153,12 @@ export class ProductService {
     }
   }
 
-  async removeCategoriesByProduct(id: string, categoryIds: string[]) {
+  async removeCategoriesByProduct(product: Product, categoryIds: string[]) {
     try {
-      if (!id || !categoryIds || categoryIds.length === 0) {
-        throw new BadRequestException(
-          'Product ID and Category IDs must be provided',
-        );
+      if (categoryIds.length === 0) {
+        throw new BadRequestException('Category IDs must be provided');
       }
 
-      const product = await this.findOne(id, ['categories']);
       const existingCategoryIds = new Set(
         product.categories.map((category) => category.id),
       );
