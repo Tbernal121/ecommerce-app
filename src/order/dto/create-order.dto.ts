@@ -1,10 +1,4 @@
-import {
-  IsNotEmpty,
-  IsArray,
-  ValidateNested,
-  IsEnum,
-  IsNumber,
-} from 'class-validator';
+import { IsNotEmpty, IsArray, ValidateNested, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import { OrderProductDto } from './order-product.dto';
@@ -14,10 +8,6 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsEnum(OrderStatusEnum)
   readonly status: OrderStatusEnum;
-
-  @IsNotEmpty()
-  @IsNumber()
-  readonly totalPrice: number;
 
   @IsArray()
   @ValidateNested({ each: true })

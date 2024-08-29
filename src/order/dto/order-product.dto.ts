@@ -7,10 +7,6 @@ export class OrderProductDto {
 
   @IsNotEmpty()
   @IsNumber()
-  readonly price: number;
-
-  @IsNotEmpty()
-  @IsNumber()
   @Min(1)
   readonly quantity: number;
 }
