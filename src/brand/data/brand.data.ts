@@ -1,12 +1,38 @@
 export const brandSeedData = [
   {
+    id: '12a1e29f-bd78-41c3-9a87-39b7c4235d0e',
+    name: 'Potterverse',
+    image: 'https://example.com/images/potterverse.png',
+    description: 'Magical merchandise and memorabilia for every wizard',
+    website: 'https://potterverse.com',
+    rating: 4.9,
+  },
+  {
+    id: '6f94c0f4-dc1f-4d45-b3b8-5fa27f129c89',
+    name: 'BarçaNation',
+    image: 'https://example.com/images/barcanation.png',
+    description: 'Official FC Barcelona fan gear and memorabilia',
+    website: 'https://barcanation.com',
+    rating: 4.7,
+  },
+  {
+    id: '43e77a4d-6b4a-4456-8a13-d5f7b4e7c1c5',
+    name: 'RandomTreasures',
+    image: 'https://example.com/images/randomtreasures.png',
+    description: 'A quirky collection of random yet awesome finds',
+    website: 'https://randomtreasures.com',
+    rating: 4.5,
+  },
+  {
+    id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
     name: 'Ligbol',
     image: 'https://example.com/images/techmaster.png',
-    description: 'Leading technology products',
+    description: 'Home of technology products',
     website: 'https://techmaster.com',
     rating: 4.8,
   },
   {
+    id: '9a1b8c1f-446d-4e5e-89b1-4f3d5d7f9c2b',
     name: 'BookWorld',
     image: 'https://example.com/images/bookworld.png',
     description: 'Your world of books',
@@ -14,6 +40,7 @@ export const brandSeedData = [
     rating: 4.2,
   },
   {
+    id: '7d6eae7f-5b2c-4f3e-86b7-bb20c733dc9a',
     name: 'Gilzuper',
     image: 'https://example.com/images/gilzuper.png',
     description: 'Trendy clothes for everyone',
