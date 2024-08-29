@@ -44,24 +44,35 @@ export class OrderService {
   }
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
+    return await this.processOrder(createOrderDto);
+  }
+
+  async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
+    const order = await this.findOne(id);
+    this.orderRepo.merge(order, updateOrderDto);
+
+    return await this.processOrder(updateOrderDto, order);
+  }
+
+  private async processOrder(
+    orderDto: CreateOrderDto | UpdateOrderDto,
+    existingOrder?: Order,
+  ): Promise<Order> {
     try {
-      if (!createOrderDto.products || createOrderDto.products.length === 0) {
+      if (!orderDto.products?.length) {
         throw new BadRequestException(
           'Order must contain at least one product',
         );
       }
 
-      const productIds = createOrderDto.products.map(
-        (product) => product.productId,
-      );
-
+      const productIds = orderDto.products.map((product) => product.productId);
       const products = await this.productService.findByIds(productIds);
 
       const productMap = new Map(
         products.map((product) => [product.id, product]),
       );
 
-      const orderProducts = createOrderDto.products.map((productDto) => {
+      const orderProducts = orderDto.products.map((productDto) => {
         const product = productMap.get(productDto.productId);
 
         if (!product) {
@@ -77,29 +88,28 @@ export class OrderService {
         });
       });
 
-      const totalPrice = orderProducts.reduce((sum, orderProduct) => {
-        return sum + orderProduct.price * orderProduct.quantity;
-      }, 0);
+      const totalPrice = orderProducts.reduce(
+        (sum, orderProduct) => sum + orderProduct.price * orderProduct.quantity,
+        0,
+      );
 
-      const newOrder = this.orderRepo.create({
-        ...createOrderDto,
+      const orderData = {
+        ...orderDto,
         totalPrice,
         products: orderProducts,
-      });
+      };
 
-      return await this.orderRepo.save(newOrder);
+      const order = existingOrder
+        ? this.orderRepo.merge(existingOrder, orderData)
+        : this.orderRepo.create(orderData);
+
+      return await this.orderRepo.save(order);
     } catch (error) {
-      Logger.error(`Failed to create order: ${error.message}`, error.stack);
+      Logger.error(`Failed to process order: ${error.message}`, error.stack);
       throw new InternalServerErrorException(
-        `Failed to create order: ${error.message}`,
+        `Failed to process order: ${error.message}`,
       );
     }
-  }
-
-  async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
-    const order = await this.findOne(id);
-    this.orderRepo.merge(order, updateOrderDto);
-    return await this.orderRepo.save(order);
   }
 
   async remove(id: string): Promise<void> {
