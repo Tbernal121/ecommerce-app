@@ -24,7 +24,7 @@ export class Brand implements IBrand {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
   @IsNotEmpty()
   @IsString()
   name: string;

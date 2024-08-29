@@ -120,7 +120,6 @@ export class Product implements IProduct {
   categories: Category[];
 
   @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.product, {
-    cascade: true,
     onDelete: 'RESTRICT',
   })
   orders: OrderProduct[];
