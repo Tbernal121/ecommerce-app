@@ -9,7 +9,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, FindOptionsWhere, Between } from 'typeorm';
 
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -36,11 +36,21 @@ export class ProductService {
     filterProductDto?: FilterProductDto,
   ): Promise<Product[]> {
     if (filterProductDto) {
+      const where: FindOptionsWhere<Product> = {};
       const offset = (filterProductDto.page - 1) * filterProductDto.limit;
+
+      if (filterProductDto.minPrice && filterProductDto.maxPrice) {
+        where.price = Between(
+          filterProductDto.minPrice,
+          filterProductDto.maxPrice,
+        );
+      }
+
       return await this.productRepo.find({
         relations,
-        take: filterProductDto.limit,
+        where,
         skip: offset,
+        take: filterProductDto.limit,
       });
     }
     return await this.productRepo.find({ relations: relations });
