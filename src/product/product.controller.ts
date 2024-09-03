@@ -14,6 +14,7 @@ import { Product } from './product.entity';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { FilterProductDto } from './dto/pagination-product.dto';
 import { ValidateUUIDsArrayPipe } from '../common/pipes/uuids-array.pipe';
 
 @ApiTags('Product')
@@ -26,9 +27,12 @@ export class ProductController {
     summary: 'List all product',
     description: 'Retrieve a list of all product',
   })
-  async findAll(@Query('relations') relations?: string): Promise<Product[]> {
+  async findAll(
+    @Body('relations') relations?: string,
+    @Query() params?: FilterProductDto,
+  ): Promise<Product[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.productService.findAll(parsedRelations);
+    return this.productService.findAll(parsedRelations, params);
   }
 
   @Get(':id')

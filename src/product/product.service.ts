@@ -14,6 +14,7 @@ import { In, Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { FilterProductDto } from './dto/pagination-product.dto';
 import { BrandService } from '../brand/brand.service';
 import { CategoryService } from '../category/category.service';
 import { productSeedData } from './data/product.data';
@@ -30,7 +31,18 @@ export class ProductService {
     private readonly brandService: BrandService,
   ) {}
 
-  async findAll(relations: string[] = []): Promise<Product[]> {
+  async findAll(
+    relations: string[] = [],
+    filterProductDto?: FilterProductDto,
+  ): Promise<Product[]> {
+    if (filterProductDto) {
+      const offset = (filterProductDto.page - 1) * filterProductDto.limit;
+      return await this.productRepo.find({
+        relations,
+        take: filterProductDto.limit,
+        skip: offset,
+      });
+    }
     return await this.productRepo.find({ relations: relations });
   }
 
