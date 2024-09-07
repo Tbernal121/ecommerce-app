@@ -9,7 +9,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository, FindOptionsWhere, Between } from 'typeorm';
+import {
+  In,
+  Repository,
+  FindOptionsWhere,
+  Between,
+  FindOptionsOrder,
+} from 'typeorm';
 
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -46,9 +52,19 @@ export class ProductService {
         );
       }
 
+      if (filterProductDto.brandId) {
+        where.brand = { id: filterProductDto.brandId };
+      }
+
+      const order: FindOptionsOrder<Product> = {};
+      if (filterProductDto.orderBy && filterProductDto.order) {
+        order[filterProductDto.orderBy] = filterProductDto.order;
+      }
+
       return await this.productRepo.find({
         relations,
         where,
+        order,
         skip: offset,
         take: filterProductDto.limit,
       });
