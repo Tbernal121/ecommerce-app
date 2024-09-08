@@ -8,6 +8,7 @@ import {
   Min,
   Max,
   IsArray,
+  IsUUID,
 } from 'class-validator';
 
 import { IProduct } from '../interfaces/product.interface';
@@ -81,12 +82,12 @@ export class CreateProductDto implements IProduct {
 
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
+  @IsUUID()
   readonly brandId?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsArray()
-  @IsString({ each: true })
+  @IsUUID('4', { each: true })
   readonly categoriesIds?: string[];
 }

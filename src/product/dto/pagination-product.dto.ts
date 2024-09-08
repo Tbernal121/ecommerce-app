@@ -2,7 +2,7 @@ import {
   IsEnum,
   IsOptional,
   IsPositive,
-  IsString,
+  IsUUID,
   Min,
   ValidateIf,
 } from 'class-validator';
@@ -37,6 +37,6 @@ export class FilterProductDto extends BaseFilterDto {
   readonly order: string;
 
   @IsOptional()
-  @IsString()
+  @IsUUID()
   readonly brandId: string;
 }

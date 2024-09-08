@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsUrl,
   IsArray,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateCategoryDto {
@@ -22,6 +23,6 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsNotEmpty()
   @IsArray()
-  @IsString({ each: true })
+  @IsUUID('4', { each: true })
   readonly productsIds?: string[];
 }

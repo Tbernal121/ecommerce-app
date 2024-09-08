@@ -5,6 +5,7 @@ import {
   Length,
   IsOptional,
   IsEnum,
+  IsUUID,
 } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 
@@ -27,7 +28,7 @@ export class CreateUserDto {
   readonly role: UserRole;
 
   @IsOptional()
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   readonly customerId: string;
 }
