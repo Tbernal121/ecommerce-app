@@ -19,7 +19,7 @@ import {
 import { IBrand } from './interfaces/brand.interface';
 import { Product } from '../product/product.entity';
 
-@Entity()
+@Entity('brands')
 export class Brand implements IBrand {
   @PrimaryGeneratedColumn('uuid')
   id: string;

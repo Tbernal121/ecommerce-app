@@ -23,7 +23,7 @@ import { Brand } from '../brand/brand.entity';
 import { OrderProduct } from '../order/entities/order-product.entity';
 import { Category } from '../category/category.entity';
 
-@Entity()
+@Entity('products')
 export class Product implements IProduct {
   @PrimaryGeneratedColumn('uuid')
   id: string;

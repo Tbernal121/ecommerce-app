@@ -16,7 +16,7 @@ import {
 
 import { User } from '../user/user.entity';
 
-@Entity()
+@Entity('customers')
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
   id: string;

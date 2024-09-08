@@ -11,7 +11,7 @@ import { IsNumber, IsNotEmpty, Min } from 'class-validator';
 import { Order } from './order.entity';
 import { Product } from '../../product/product.entity';
 
-@Entity()
+@Entity('order_products')
 export class OrderProduct {
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -11,7 +11,7 @@ import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
 
 import { Product } from '../product/product.entity';
 
-@Entity()
+@Entity('categories')
 //@Tree('closure-table')
 export class Category {
   @PrimaryGeneratedColumn('uuid')
@@ -41,7 +41,7 @@ export class Category {
   @ManyToMany(() => Product, (product) => product.categories, {
     onDelete: 'CASCADE',
   })
-  @JoinTable()
+  @JoinTable({ name: 'categories_products' })
   products: Product[];
 
   /*// parentCategory?: Category; // reference to a parent category (optional)

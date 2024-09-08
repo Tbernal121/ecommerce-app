@@ -11,7 +11,7 @@ import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
 import { OrderStatusEnum } from '../enum/order-status.enum';
 import { OrderProduct } from './order-product.entity';
 
-@Entity()
+@Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;

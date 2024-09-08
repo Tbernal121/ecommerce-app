@@ -12,7 +12,7 @@ import { IsNotEmpty, IsString, IsEmail, Length, IsEnum } from 'class-validator';
 import { Customer } from '../customer/customer.entity';
 import { UserRole } from './enum/role.enum';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
