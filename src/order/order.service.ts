@@ -15,6 +15,8 @@ import { OrderProduct } from './entities/order-product.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ProductService } from '../product/product.service';
+import { orderSeedData } from './data/order.data';
+import { orderProductSeedData } from './data/order-product.data';
 
 @Injectable()
 export class OrderService {
@@ -115,5 +117,30 @@ export class OrderService {
   async remove(id: string): Promise<void> {
     const order = await this.findOne(id);
     await this.orderRepo.delete(id);
+  }
+
+  async seed(): Promise<void> {
+    for (const orderData of orderSeedData) {
+      let order = await this.orderRepo.findOne({ where: { id: orderData.id } });
+      if (!order) {
+        order = this.orderRepo.create(orderData);
+        await this.orderRepo.save(order);
+      }
+    }
+
+    for (const orderProductData of orderProductSeedData) {
+      let orderProduct = await this.orderProductRepo.findOne({
+        where: { id: orderProductData.id },
+      });
+      if (!orderProduct) {
+        orderProduct = this.orderProductRepo.create({
+          ...orderProductData,
+          price: (
+            await this.productService.findOne(orderProductData.product.id)
+          ).price,
+        });
+        await this.orderProductRepo.save(orderProduct);
+      }
+    }
   }
 }

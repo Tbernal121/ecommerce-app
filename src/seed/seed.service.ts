@@ -24,6 +24,6 @@ export class SeedService {
     await this.brandService.seed();
     await this.CategoryService.seed();
     await this.productsService.seed();
-    // this.ordersService.seed();
+    await this.ordersService.seed();
   }
 }
