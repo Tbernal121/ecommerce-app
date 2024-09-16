@@ -62,12 +62,22 @@ export class CategoryService {
   }
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const newCategory = this.categoryRepo.create(createCategoryDto);
+    const { subCategories, parentCategoryId, productsIds, ...categoryData } =
+      createCategoryDto;
+    const newCategory = this.categoryRepo.create(categoryData);
 
-    if (createCategoryDto.productsIds) {
-      const products = await this.productsService.findByIds(
-        createCategoryDto.productsIds,
-      );
+    if (parentCategoryId) {
+      const parentCategory = await this.findOne(parentCategoryId);
+      newCategory.parentCategory = parentCategory;
+    }
+
+    if (subCategories && subCategories.length > 0) {
+      const subCategoryEntities = await this.findByIds(subCategories);
+      newCategory.subCategories = subCategoryEntities;
+    }
+
+    if (productsIds) {
+      const products = await this.productsService.findByIds(productsIds);
       newCategory.products = products;
     }
 
@@ -78,16 +88,28 @@ export class CategoryService {
     id: string,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
+    const { subCategories, parentCategoryId, productsIds, ...categoryData } =
+      updateCategoryDto;
     const category = await this.findOne(id);
 
-    if (updateCategoryDto.productsIds) {
-      const products = await this.productsService.findByIds(
-        updateCategoryDto.productsIds,
-      );
-      category.products = products;
+    if (parentCategoryId !== undefined) {
+      category.parentCategory =
+        parentCategoryId === null ? null : await this.findOne(parentCategoryId);
     }
 
-    this.categoryRepo.merge(category, updateCategoryDto);
+    if (subCategories !== undefined) {
+      category.subCategories = subCategories?.length
+        ? await this.findByIds(subCategories)
+        : [];
+    }
+
+    if (productsIds !== undefined) {
+      category.products = productsIds?.length
+        ? await this.productsService.findByIds(productsIds)
+        : [];
+    }
+
+    this.categoryRepo.merge(category, categoryData);
     return await this.categoryRepo.save(category);
   }
 

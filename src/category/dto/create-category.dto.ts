@@ -21,6 +21,17 @@ export class CreateCategoryDto {
   readonly image: string;
 
   @IsOptional()
+  @IsUUID()
+  @IsNotEmpty()
+  readonly parentCategoryId?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  readonly subCategories?: string[];
+
+  @IsOptional()
   @IsNotEmpty()
   @IsArray()
   @IsUUID('4', { each: true })
