@@ -17,6 +17,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { ProductService } from '../product/product.service';
 import { orderSeedData } from './data/order.data';
 import { orderProductSeedData } from './data/order-product.data';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
 @Injectable()
 export class OrderService {
@@ -54,6 +55,20 @@ export class OrderService {
     this.orderRepo.merge(order, updateOrderDto);
 
     return await this.processOrder(updateOrderDto, order);
+  }
+
+  async updateStatus(
+    id: string,
+    updateOrderStatusDto: UpdateOrderStatusDto,
+  ): Promise<Order> {
+    const order = await this.findOne(id);
+
+    if (order.status !== updateOrderStatusDto.status) {
+      order.status = updateOrderStatusDto.status;
+      await this.orderRepo.save(order);
+    }
+
+    return order;
   }
 
   private async processOrder(

@@ -14,6 +14,7 @@ import { ApiOperation } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { Order } from './entities/order.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
 @Controller('order')
 export class OrderController {
@@ -61,6 +62,18 @@ export class OrderController {
     @Body() updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
     return this.orderService.update(id, updateOrderDto);
+  }
+
+  @Put(':id/status')
+  @ApiOperation({
+    summary: 'Update an order status',
+    description: 'Update an existing order status by its ID',
+  })
+  async updateOrderStatus(
+    @Param('id') id: string,
+    @Body() updateOrderStatusDto: UpdateOrderStatusDto,
+  ): Promise<Order> {
+    return this.orderService.updateStatus(id, updateOrderStatusDto);
   }
 
   @Delete(':id')
