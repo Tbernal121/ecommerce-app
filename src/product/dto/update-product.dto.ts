@@ -7,13 +7,20 @@ import { Category } from '../../category/category.entity';
 export class UpdateProductDto extends PartialType(
   OmitType(CreateProductDto, ['categoriesIds'] as const),
 ) {
-  @IsArray()
+  @ApiProperty({
+    description: 'The categories to add to the product',
+    example: [],
+  })
   @IsOptional()
-  @ApiProperty()
+  @IsArray()
   readonly categoriesIdsToAdd?: Category['id'][];
 
-  @IsArray()
+  @ApiProperty({
+    description: 'The categories to delete from the product',
+    example: [],
+  })
   @IsOptional()
-  @ApiProperty()
+  @IsArray()
+  @IsBoolean()
   readonly categoriesIdsToDelete?: Category['id'][];
 }

@@ -7,29 +7,38 @@ import {
   IsEnum,
   IsUUID,
 } from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 import { UserRole } from '../enum/role.enum';
 
 export class CreateUserDto {
-  @IsString()
+  @ApiProperty({
+    description: 'The user email',
+    example: 'harry.potter@mail.com',
+  })
   @IsEmail()
-  @IsNotEmpty()
   readonly email: string;
 
+  @ApiProperty({ description: 'The user password', example: 'password' })
   @IsString()
   @IsNotEmpty()
   @Length(6)
   readonly password: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The user role',
+    enum: UserRole,
+    example: UserRole.Admin,
+  })
   @IsEnum(UserRole)
   readonly role: UserRole;
 
+  @ApiProperty({
+    description: 'The customer id',
+    example: 'e4edf922-1957-4131-b155-810d7b3be67b',
+  })
   @IsOptional()
   @IsUUID()
-  @IsNotEmpty()
   readonly customerId: string;
 }
 

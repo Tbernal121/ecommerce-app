@@ -39,12 +39,10 @@ export class Product implements IProduct {
   description: string;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: false })
-  @IsNotEmpty()
   @IsNumber()
   price: number;
 
   @Column('int', { nullable: false })
-  @IsNotEmpty()
   @IsNumber()
   stock: number;
 
@@ -66,7 +64,6 @@ export class Product implements IProduct {
 
   @Column('decimal', { precision: 2, scale: 1, nullable: true })
   @IsOptional()
-  @IsNumber()
   @Min(0)
   @Max(5)
   rating?: number;
