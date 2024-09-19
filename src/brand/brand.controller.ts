@@ -8,7 +8,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Brand } from './brand.entity';
 import { BrandService } from './brand.service';
@@ -27,9 +27,10 @@ export class BrandController {
     description: 'Retrieve a list of all brands',
   })
   @ApiRelationsQuery()
+  @ApiResponse({ status: 200, type: [Brand] })
   async findAll(@Query('relations') relations?: string): Promise<Brand[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.brandService.findAll(parsedRelations);
+    return await this.brandService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -37,19 +38,28 @@ export class BrandController {
     summary: 'Get brand by ID',
     description: 'Retrieve a single brand by its ID',
   })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The ID of the brand to retrieve',
+    example: '43e77a4d-6b4a-4456-8a13-d5f7b4e7c1c5',
+  })
   @ApiRelationsQuery()
+  @ApiResponse({ status: 200, type: Brand })
   async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<Brand> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.brandService.findOne(id, parsedRelations);
+    return await this.brandService.findOne(id, parsedRelations);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create brand', description: 'Create a new brand' })
+  @ApiResponse({ status: 201, type: Brand })
   async create(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {
-    return this.brandService.create(createBrandDto);
+    return await this.brandService.create(createBrandDto);
   }
 
   @Put(':id')
@@ -57,11 +67,19 @@ export class BrandController {
     summary: 'Update brand',
     description: 'Update an existing brand by its ID',
   })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The ID of the brand to update',
+    example: '43e77a4d-6b4a-4456-8a13-d5f7b4e7c1c5',
+  })
+  @ApiResponse({ status: 200, type: Brand })
   async update(
     @Param('id') id: string,
     @Body() updateBrandDto: UpdateBrandDto,
   ): Promise<Brand> {
-    return this.brandService.update(id, updateBrandDto);
+    return await this.brandService.update(id, updateBrandDto);
   }
 
   @Delete(':id')
@@ -69,7 +87,15 @@ export class BrandController {
     summary: 'Delete brand',
     description: 'Delete a brand by its ID',
   })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The ID of the brand to delete',
+    example: '43e77a4d-6b4a-4456-8a13-d5f7b4e7c1c5',
+  })
+  @ApiResponse({ status: 200 })
   async remove(@Param('id') id: string): Promise<void> {
-    return this.brandService.remove(id);
+    return await this.brandService.remove(id);
   }
 }

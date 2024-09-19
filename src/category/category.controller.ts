@@ -8,12 +8,13 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 import { Category } from './category.entity';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ApiRelationsQuery } from '../common/decorators/api-relations-query.decorator';
 
 @ApiTags('Category')
 @Controller('category')
@@ -25,6 +26,8 @@ export class CategoryController {
     summary: 'List all categories',
     description: 'Retrieve a list of all categories',
   })
+  @ApiRelationsQuery()
+  @ApiResponse({ status: 200, type: [Category] })
   async findAll(@Query('relations') relations?: string): Promise<Category[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.categoryService.findAll(parsedRelations);
@@ -35,6 +38,15 @@ export class CategoryController {
     summary: 'Get category by ID',
     description: 'Retrieve a single category by its ID',
   })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The ID of the category to retrieve',
+    example: '59d2d97e-1a65-4cba-b5e3-9f3eb18c54dd',
+  })
+  @ApiRelationsQuery()
+  @ApiResponse({ status: 200, type: Category })
   async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
@@ -48,6 +60,7 @@ export class CategoryController {
     summary: 'Create category',
     description: 'Create a new category',
   })
+  @ApiResponse({ status: 201, type: Category })
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
   ): Promise<Category> {
@@ -59,6 +72,14 @@ export class CategoryController {
     summary: 'Update category',
     description: 'Update an existing category by its ID',
   })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The ID of the category to update',
+    example: '59d2d97e-1a65-4cba-b5e3-9f3eb18c54dd',
+  })
+  @ApiResponse({ status: 200, type: Category })
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -71,6 +92,14 @@ export class CategoryController {
     summary: 'Delete category',
     description: 'Delete a category by its ID',
   })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The ID of the category to delete',
+    example: '59d2d97e-1a65-4cba-b5e3-9f3eb18c54dd',
+  })
+  @ApiResponse({ status: 200 })
   async remove(@Param('id') id: string): Promise<void> {
     return this.categoryService.remove(id);
   }

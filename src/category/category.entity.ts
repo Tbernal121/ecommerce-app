@@ -31,7 +31,6 @@ export class Category {
   description?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  @IsNotEmpty()
   @IsUrl()
   image: string; // URL of the image
 

@@ -10,7 +10,6 @@ import {
   IsNotEmpty,
   IsString,
   IsOptional,
-  IsNumber,
   IsUrl,
   Max,
   Min,
@@ -46,7 +45,6 @@ export class Brand implements IBrand {
 
   @Column('decimal', { precision: 2, scale: 1, nullable: true })
   @IsOptional()
-  @IsNumber()
   @Min(0)
   @Max(5)
   rating?: number;
