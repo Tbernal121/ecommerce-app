@@ -14,6 +14,7 @@ import { Brand } from './brand.entity';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { ApiRelationsQuery } from '../common/decorators/api-relations-query.decorator';
 
 @ApiTags('Brand')
 @Controller('brand')
@@ -25,6 +26,7 @@ export class BrandController {
     summary: 'List all brands',
     description: 'Retrieve a list of all brands',
   })
+  @ApiRelationsQuery()
   async findAll(@Query('relations') relations?: string): Promise<Brand[]> {
     const parsedRelations = relations ? relations.split(',') : [];
     return this.brandService.findAll(parsedRelations);
@@ -35,6 +37,7 @@ export class BrandController {
     summary: 'Get brand by ID',
     description: 'Retrieve a single brand by its ID',
   })
+  @ApiRelationsQuery()
   async findOne(
     @Param('id') id: string,
     @Query('relations') relations?: string,
