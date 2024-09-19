@@ -17,13 +17,10 @@ export class OrderProduct {
   id: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  @IsNotEmpty()
   @IsNumber()
   price: number;
 
   @Column({ type: 'int' })
-  @IsNotEmpty()
-  @IsNumber()
   @Min(1)
   quantity: number;
 

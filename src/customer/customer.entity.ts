@@ -32,17 +32,14 @@ export class Customer {
   lastName: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
-  @IsNotEmpty()
   @IsPhoneNumber(null) // Uses a default phone number format, can be customized
   phone: string;
 
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
   @Column({ type: 'simple-array' })
-  @IsNotEmpty()
   @IsArray()
   @IsString({ each: true })
   address: string[];
@@ -53,6 +50,7 @@ export class Customer {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
+  // maybe this shouldn't be nullable
   @OneToOne(() => User, (user) => user.customer, {
     nullable: true,
     onDelete: 'SET NULL',

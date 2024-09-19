@@ -52,9 +52,9 @@ export class OrderService {
 
   async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
     const order = await this.findOne(id);
+    console.log('existing order:', order);
     this.orderRepo.merge(order, updateOrderDto);
-
-    return await this.processOrder(updateOrderDto, order);
+    return await this.orderRepo.save(order);
   }
 
   async updateStatus(
@@ -84,7 +84,6 @@ export class OrderService {
 
       const productIds = orderDto.products.map((product) => product.productId);
       const products = await this.productService.findByIds(productIds);
-
       const productMap = new Map(
         products.map((product) => [product.id, product]),
       );
@@ -92,15 +91,14 @@ export class OrderService {
       const orderProducts = orderDto.products.map((productDto) => {
         const product = productMap.get(productDto.productId);
 
-        if (!product) {
-          throw new BadRequestException(
-            `Product with ID ${productDto.productId} not found`,
-          );
-        }
+        // const numericPrice =
+        //   typeof product.price === 'string'
+        //     ? parseFloat(product.price)
+        //     : product.price;
 
         return this.orderProductRepo.create({
           product,
-          price: product.price,
+          price: product.price, // price: numericPrice,
           quantity: productDto.quantity,
         });
       });
