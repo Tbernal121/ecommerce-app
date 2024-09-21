@@ -12,9 +12,9 @@ services:
     ports:
       - '${DB_PORT}:5432' # Maps port DB_PORT on the host (outside) to port 5432 (second one) inside the container (inside)
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Persist database data in a named volume
+      - ecommerce-db:/var/lib/postgresql/data # Persist database data in a named volume
     networks:
-      - ecommerce-postgres-network # Connects the service to a custom network, isolating it from other services not on the same network
+      - ecommerce-postgres # Connects the service to a custom network, isolating it from other services not on the same network
     healthcheck: # To ensure the service is running properly
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}'] # Command to check if the database is ready
       interval: 10s
@@ -32,20 +32,20 @@ services:
     ports:
       - '${PG_ADMIN_PORT}:80' # Maps port PG_ADMIN_PORT on the host (outside) to port 80 (inside the container)
     volumes:
-      - pgadmin_data:/var/lib/pgadmin # Persist pgAdmin data in a named volume, ensuring settings aren't lost when the container stops
+      - ecommerce-pgadmin:/var/lib/pgadmin # Persist pgAdmin data in a named volume, ensuring settings aren't lost when the container stops
     depends_on:
       ecommerce-postgres-db:
         condition: service_healthy # Ensures pgAdmin starts only after the ecommerce-postgres-db service is healthy
     networks:
-      - ecommerce-postgres-network # Connects the service to a custom network
+      - ecommerce-postgres # Connects the service to a custom network
     restart: unless-stopped # Automatically restart containers unless they are stopped manually
 
 networks:
-  ecommerce-postgres-network: # Defines a custom network for the services
+  ecommerce-postgres: # Defines a custom network for the services
     driver: bridge
 
 volumes:
-  postgres_data: # Defines a Docker volume named "postgres_data" for persistent data storage
+  ecommerce-db: # Defines a Docker volume named "postgres_data" for persistent data storage
     driver: local # Uses the local storage driver to store data on the host filesystem. Could be nfs too
-  pgadmin_data: # Defines a Docker volume named "pgadmin_data" for persistent data storage
+  ecommerce-pgadmin: # Defines a Docker volume named "pgadmin-data" for persistent data storage
     driver: local # Uses the local storage driver to store data on the host filesystem. Could be nfs too
