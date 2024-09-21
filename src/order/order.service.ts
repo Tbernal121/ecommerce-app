@@ -8,7 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderProduct } from './entities/order-product.entity';
@@ -24,11 +24,14 @@ export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
+
     @InjectRepository(OrderProduct)
     private readonly orderProductRepo: Repository<OrderProduct>,
 
     @Inject(forwardRef(() => ProductService))
     private readonly productService: ProductService,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(relations: string[] = []): Promise<Order[]> {
@@ -133,27 +136,45 @@ export class OrderService {
   }
 
   async seed(): Promise<void> {
-    for (const orderData of orderSeedData) {
-      let order = await this.orderRepo.findOne({ where: { id: orderData.id } });
-      if (!order) {
-        order = this.orderRepo.create(orderData);
-        await this.orderRepo.save(order);
-      }
-    }
+    const queryRunner = this.dataSource.createQueryRunner();
+    const logger = new Logger('Order Seed');
 
-    for (const orderProductData of orderProductSeedData) {
-      let orderProduct = await this.orderProductRepo.findOne({
-        where: { id: orderProductData.id },
-      });
-      if (!orderProduct) {
-        orderProduct = this.orderProductRepo.create({
-          ...orderProductData,
-          price: (
-            await this.productService.findOne(orderProductData.product.id)
-          ).price,
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      for (const orderData of orderSeedData) {
+        const existingOrder = await queryRunner.manager.findOne(Order, {
+          where: { id: orderData.id },
         });
-        await this.orderProductRepo.save(orderProduct);
+        if (!existingOrder) {
+          const order = queryRunner.manager.create(Order, orderData);
+          await queryRunner.manager.save(order);
+        }
       }
+      for (const orderProductData of orderProductSeedData) {
+        const existingOrderProduct = await queryRunner.manager.findOne(
+          OrderProduct,
+          {
+            where: { id: orderProductData.id },
+          },
+        );
+        if (!existingOrderProduct) {
+          const orderProduct = queryRunner.manager.create(OrderProduct, {
+            ...orderProductData,
+            price: (
+              await this.productService.findOne(orderProductData.product.id)
+            ).price,
+          });
+          await queryRunner.manager.save(orderProduct);
+        }
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      logger.error(`Failed to seed orders: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to seed orders');
+    } finally {
+      await queryRunner.release();
     }
   }
 }

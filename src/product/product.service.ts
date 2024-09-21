@@ -15,6 +15,8 @@ import {
   FindOptionsWhere,
   Between,
   FindOptionsOrder,
+  DataSource,
+  QueryRunner,
 } from 'typeorm';
 
 import { Product } from './product.entity';
@@ -35,6 +37,8 @@ export class ProductService {
     private readonly categoryService: CategoryService,
 
     private readonly brandService: BrandService,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(
@@ -125,6 +129,11 @@ export class ProductService {
     id: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const [product, brand] = await Promise.all([
         this.findOne(id, ['brand', 'categories']),
@@ -135,6 +144,7 @@ export class ProductService {
 
       if (updateProductDto.categoriesIdsToAdd) {
         await this.addCategoriesByProduct(
+          queryRunner,
           product,
           updateProductDto.categoriesIdsToAdd,
         );
@@ -142,6 +152,7 @@ export class ProductService {
 
       if (updateProductDto.categoriesIdsToDelete) {
         await this.removeCategoriesByProduct(
+          queryRunner,
           product,
           updateProductDto.categoriesIdsToDelete,
         );
@@ -156,16 +167,26 @@ export class ProductService {
       }
 
       this.productRepo.merge(product, updateProductDto);
-      return await this.productRepo.save(product);
+      await queryRunner.manager.save(product);
+      await queryRunner.commitTransaction();
+
+      return product;
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       Logger.error(`Failed to update product: ${error.message}`, error.stack);
       throw new InternalServerErrorException(
         `Failed to update product: ${error.message}`,
       );
+    } finally {
+      await queryRunner.release();
     }
   }
 
-  async addCategoriesByProduct(product: Product, categoryIds: string[]) {
+  async addCategoriesByProduct(
+    queryRunner: QueryRunner,
+    product: Product,
+    categoryIds: string[],
+  ) {
     try {
       if (categoryIds.length === 0) {
         throw new BadRequestException('Category IDs must be provided');
@@ -186,7 +207,7 @@ export class ProductService {
       }
 
       product.categories.push(...newCategories);
-      return await this.productRepo.save(product);
+      await queryRunner.manager.save(product);
     } catch (error) {
       Logger.error(
         `Failed to add categories to product: ${error.message}`,
@@ -199,7 +220,11 @@ export class ProductService {
     }
   }
 
-  async removeCategoriesByProduct(product: Product, categoryIds: string[]) {
+  async removeCategoriesByProduct(
+    queryRunner: QueryRunner,
+    product: Product,
+    categoryIds: string[],
+  ) {
     try {
       if (categoryIds.length === 0) {
         throw new BadRequestException('Category IDs must be provided');
@@ -221,7 +246,7 @@ export class ProductService {
       product.categories = product.categories.filter(
         (category) => !categoriesToRemove.includes(category.id),
       );
-      return await this.productRepo.save(product);
+      await queryRunner.manager.save(product);
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to remove categories from a product: ${error.message}`,
@@ -235,14 +260,28 @@ export class ProductService {
   }
 
   async seed() {
-    for (const productData of productSeedData) {
-      const existingProduct = await this.productRepo.findOne({
-        where: { name: productData.name },
-      });
-      if (!existingProduct) {
-        const product = this.productRepo.create(productData);
-        await this.productRepo.save(product);
+    const queryRunner = this.dataSource.createQueryRunner();
+    const logger = new Logger('Product Seed');
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      for (const productData of productSeedData) {
+        const existingProduct = await queryRunner.manager.findOne(Product, {
+          where: { id: productData.id },
+        });
+        if (!existingProduct) {
+          const product = queryRunner.manager.create(Product, productData);
+          await queryRunner.manager.save(product);
+        }
       }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      logger.error(`Failed to seed products: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to seed products');
+    } finally {
+      await queryRunner.release();
     }
   }
 }

@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
@@ -13,6 +18,8 @@ export class UserService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
 
     private readonly customerService: CustomerService,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(relations: string[] = []): Promise<User[]> {
@@ -59,17 +66,30 @@ export class UserService {
   }
 
   async seed() {
-    for (const userData of userSeedData) {
-      const existingUser = await this.userRepo.findOne({
-        where: { email: userData.email },
-      });
+    const queryRunner = this.dataSource.createQueryRunner();
+    const logger = new Logger('User Seed');
 
-      if (!existingUser) {
-        const user = this.userRepo.create(userData);
-        // hash the password before saving
-        // user.password = await this.hashPassword(userData.password);
-        await this.userRepo.save(user);
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      for (const userData of userSeedData) {
+        const existingUser = await queryRunner.manager.findOne(User, {
+          where: { id: userData.id },
+        });
+        if (!existingUser) {
+          const user = queryRunner.manager.create(User, userData);
+          // hash the password before saving
+          // user.password = await this.hashPassword(userData.password);
+          await queryRunner.manager.save(user);
+        }
       }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      logger.error(`Failed to seed users: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to seed users');
+    } finally {
+      await queryRunner.release();
     }
   }
 }

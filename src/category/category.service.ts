@@ -2,10 +2,12 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 import { Category } from '../category/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -21,6 +23,8 @@ export class CategoryService {
 
     @Inject(forwardRef(() => ProductService))
     private readonly productsService: ProductService,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(relations: string[] = []): Promise<Category[]> {
@@ -119,14 +123,28 @@ export class CategoryService {
   }
 
   async seed() {
-    for (const categoryData of categorySeedData) {
-      const existingCategory = await this.categoryRepo.findOne({
-        where: { name: categoryData.name },
-      });
-      if (!existingCategory) {
-        const category = this.categoryRepo.create(categoryData);
-        await this.categoryRepo.save(category);
+    const queryRunner = this.dataSource.createQueryRunner();
+    const logger = new Logger('Category Seed');
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      for (const categoryData of categorySeedData) {
+        const existingCategory = await queryRunner.manager.findOne(Category, {
+          where: { id: categoryData.id },
+        });
+        if (!existingCategory) {
+          const category = queryRunner.manager.create(Category, categoryData);
+          await queryRunner.manager.save(category);
+        }
       }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      logger.error(`Failed to seed categories: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to seed categories');
+    } finally {
+      await queryRunner.release();
     }
   }
 }

@@ -4,7 +4,7 @@ import { SeedModule } from './seed.module';
 import { SeedService } from './seed.service';
 
 async function bootstrap() {
-  const logger = new Logger('SeedBootstrap');
+  const logger = new Logger('Seed');
   const appContext = await NestFactory.createApplicationContext(SeedModule);
 
   try {
