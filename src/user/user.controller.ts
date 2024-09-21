@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -29,7 +30,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: [User] })
   async findAll(@Query('relations') relations?: string): Promise<User[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.userService.findAll(parsedRelations);
+    return await this.userService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -47,11 +48,11 @@ export class UserController {
   @ApiRelationsQuery()
   @ApiResponse({ status: 200, type: User })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Query('relations') relations?: string,
   ): Promise<User> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.userService.findOne(id, parsedRelations);
+    return await this.userService.findOne(id, parsedRelations);
   }
 
   @Post()
@@ -75,10 +76,10 @@ export class UserController {
   })
   @ApiResponse({ status: 200, type: User })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.userService.update(id, updateUserDto);
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -94,7 +95,7 @@ export class UserController {
     example: '781bd3cd-23a2-49e0-bb71-cc5c99f52c8c',
   })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.userService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.userService.remove(id);
   }
 }

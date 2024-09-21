@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -30,7 +31,7 @@ export class CategoryController {
   @ApiResponse({ status: 200, type: [Category] })
   async findAll(@Query('relations') relations?: string): Promise<Category[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.categoryService.findAll(parsedRelations);
+    return await this.categoryService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -48,11 +49,11 @@ export class CategoryController {
   @ApiRelationsQuery()
   @ApiResponse({ status: 200, type: Category })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Query('relations') relations?: string,
   ): Promise<Category> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.categoryService.findOne(id, parsedRelations);
+    return await this.categoryService.findOne(id, parsedRelations);
   }
 
   @Post()
@@ -64,7 +65,7 @@ export class CategoryController {
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
   ): Promise<Category> {
-    return this.categoryService.create(createCategoryDto);
+    return await this.categoryService.create(createCategoryDto);
   }
 
   @Put(':id')
@@ -81,10 +82,10 @@ export class CategoryController {
   })
   @ApiResponse({ status: 200, type: Category })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
-    return this.categoryService.update(id, updateCategoryDto);
+    return await this.categoryService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
@@ -100,7 +101,7 @@ export class CategoryController {
     example: '59d2d97e-1a65-4cba-b5e3-9f3eb18c54dd',
   })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.categoryService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.categoryService.remove(id);
   }
 }

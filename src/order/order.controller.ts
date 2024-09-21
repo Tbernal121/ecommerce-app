@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -28,7 +29,7 @@ export class OrderController {
   })
   @ApiResponse({ status: 201, type: Order })
   async create(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
-    return this.orderService.create(createOrderDto);
+    return await this.orderService.create(createOrderDto);
   }
 
   @Get()
@@ -40,7 +41,7 @@ export class OrderController {
   @ApiResponse({ status: 200, type: [Order] })
   async findAll(@Query('relations') relations?: string): Promise<Order[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.orderService.findAll(parsedRelations);
+    return await this.orderService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -58,11 +59,11 @@ export class OrderController {
   @ApiRelationsQuery()
   @ApiResponse({ status: 200, type: Order })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Query('relations') relations?: string,
   ): Promise<Order> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.orderService.findOne(id, parsedRelations);
+    return await this.orderService.findOne(id, parsedRelations);
   }
 
   @Put(':id')
@@ -79,10 +80,10 @@ export class OrderController {
   })
   @ApiResponse({ status: 200, type: Order })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
-    return this.orderService.update(id, updateOrderDto);
+    return await this.orderService.update(id, updateOrderDto);
   }
 
   @Put(':id/status')
@@ -99,10 +100,10 @@ export class OrderController {
   })
   @ApiResponse({ status: 200, type: Order })
   async updateOrderStatus(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateOrderStatusDto: UpdateOrderStatusDto,
   ): Promise<Order> {
-    return this.orderService.updateStatus(id, updateOrderStatusDto);
+    return await this.orderService.updateStatus(id, updateOrderStatusDto);
   }
 
   @Delete(':id')
@@ -118,7 +119,7 @@ export class OrderController {
     example: 'e9c74a41-c1f2-4860-be53-85b3fa03ff35',
   })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.orderService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.orderService.remove(id);
   }
 }

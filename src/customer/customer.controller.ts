@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -30,7 +31,7 @@ export class CustomerController {
   @ApiResponse({ status: 200, type: [Customer] })
   async findAll(@Query('relations') relations?: string): Promise<Customer[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.customerService.findAll(parsedRelations);
+    return await this.customerService.findAll(parsedRelations);
   }
 
   @Get(':id')
@@ -48,11 +49,11 @@ export class CustomerController {
   @ApiRelationsQuery()
   @ApiResponse({ status: 200, type: Customer })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Query('relations') relations?: string,
   ): Promise<Customer> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.customerService.findOne(id, parsedRelations);
+    return await this.customerService.findOne(id, parsedRelations);
   }
 
   @Post()
@@ -64,7 +65,7 @@ export class CustomerController {
   async create(
     @Body() createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
-    return this.customerService.create(createCustomerDto);
+    return await this.customerService.create(createCustomerDto);
   }
 
   @Put(':id')
@@ -81,10 +82,10 @@ export class CustomerController {
   })
   @ApiResponse({ status: 200, type: Customer })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    return this.customerService.update(id, updateCustomerDto);
+    return await this.customerService.update(id, updateCustomerDto);
   }
 
   @Delete(':id')
@@ -100,7 +101,7 @@ export class CustomerController {
     example: 'e4edf922-1957-4131-b155-810d7b3be67b',
   })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.customerService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.customerService.remove(id);
   }
 }

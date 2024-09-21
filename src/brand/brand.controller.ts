@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -48,7 +49,7 @@ export class BrandController {
   @ApiRelationsQuery()
   @ApiResponse({ status: 200, type: Brand })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Query('relations') relations?: string,
   ): Promise<Brand> {
     const parsedRelations = relations ? relations.split(',') : [];
@@ -76,7 +77,7 @@ export class BrandController {
   })
   @ApiResponse({ status: 200, type: Brand })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateBrandDto: UpdateBrandDto,
   ): Promise<Brand> {
     return await this.brandService.update(id, updateBrandDto);
@@ -95,7 +96,7 @@ export class BrandController {
     example: '43e77a4d-6b4a-4456-8a13-d5f7b4e7c1c5',
   })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.brandService.remove(id);
   }
 }

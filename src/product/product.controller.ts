@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -35,7 +36,7 @@ export class ProductController {
     @Query() params?: FilterProductDto,
   ): Promise<Product[]> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.productService.findAll(parsedRelations, params);
+    return await this.productService.findAll(parsedRelations, params);
   }
 
   @Get(':id')
@@ -53,11 +54,11 @@ export class ProductController {
   @ApiRelationsQuery()
   @ApiResponse({ status: 200, type: Product })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Query('relations') relations?: string,
   ): Promise<Product> {
     const parsedRelations = relations ? relations.split(',') : [];
-    return this.productService.findOne(id, parsedRelations);
+    return await this.productService.findOne(id, parsedRelations);
   }
 
   @Post()
@@ -67,7 +68,7 @@ export class ProductController {
   })
   @ApiResponse({ status: 201, type: Product })
   async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
-    return this.productService.create(createProductDto);
+    return await this.productService.create(createProductDto);
   }
 
   @Put(':id')
@@ -84,10 +85,10 @@ export class ProductController {
   })
   @ApiResponse({ status: 200, type: Product })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    return this.productService.update(id, updateProductDto);
+    return await this.productService.update(id, updateProductDto);
   }
 
   @Put(':id/categories')
@@ -104,11 +105,14 @@ export class ProductController {
   })
   @ApiResponse({ status: 200, type: Product })
   async addCategoriesByProduct(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body('categoryIds', ValidateUUIDsArrayPipe) categoryIds: string[],
   ): Promise<Product> {
     const product = await this.productService.findOne(id, ['categories']);
-    return this.productService.addCategoriesByProduct(product, categoryIds);
+    return await this.productService.addCategoriesByProduct(
+      product,
+      categoryIds,
+    );
   }
 
   @Delete(':id')
@@ -124,8 +128,8 @@ export class ProductController {
     example: 'dd37e2d9-786e-4260-b7df-ef45f732345e',
   })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.productService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.productService.remove(id);
   }
 
   @Delete(':id/categories')
@@ -142,10 +146,13 @@ export class ProductController {
   })
   @ApiResponse({ status: 200, type: Product })
   async removeCategoriesByProduct(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body('categoryIds', ValidateUUIDsArrayPipe) categoryIds: string[],
   ): Promise<Product> {
     const product = await this.productService.findOne(id, ['categories']);
-    return this.productService.removeCategoriesByProduct(product, categoryIds);
+    return await this.productService.removeCategoriesByProduct(
+      product,
+      categoryIds,
+    );
   }
 }
