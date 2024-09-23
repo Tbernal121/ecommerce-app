@@ -29,6 +29,8 @@ import { productSeedData } from './data/product.data';
 
 @Injectable()
 export class ProductService {
+  private readonly logger = new Logger(ProductService.name);
+
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
@@ -45,84 +47,120 @@ export class ProductService {
     relations: string[] = [],
     filterProductDto?: FilterProductDto,
   ): Promise<Product[]> {
-    if (filterProductDto) {
-      const where: FindOptionsWhere<Product> = {};
-      const offset = (filterProductDto.page - 1) * filterProductDto.limit;
+    try {
+      if (filterProductDto) {
+        const where: FindOptionsWhere<Product> = {};
+        const offset = (filterProductDto.page - 1) * filterProductDto.limit;
 
-      if (filterProductDto.minPrice && filterProductDto.maxPrice) {
-        where.price = Between(
-          filterProductDto.minPrice,
-          filterProductDto.maxPrice,
-        );
+        if (filterProductDto.minPrice && filterProductDto.maxPrice) {
+          where.price = Between(
+            filterProductDto.minPrice,
+            filterProductDto.maxPrice,
+          );
+        }
+
+        if (filterProductDto.brandId) {
+          where.brand = { id: filterProductDto.brandId };
+        }
+
+        const order: FindOptionsOrder<Product> = {};
+        if (filterProductDto.orderBy && filterProductDto.order) {
+          order[filterProductDto.orderBy] = filterProductDto.order;
+        }
+
+        return await this.productRepo.find({
+          relations,
+          where,
+          order,
+          skip: offset,
+          take: filterProductDto.limit,
+        });
       }
-
-      if (filterProductDto.brandId) {
-        where.brand = { id: filterProductDto.brandId };
-      }
-
-      const order: FindOptionsOrder<Product> = {};
-      if (filterProductDto.orderBy && filterProductDto.order) {
-        order[filterProductDto.orderBy] = filterProductDto.order;
-      }
-
-      return await this.productRepo.find({
-        relations,
-        where,
-        order,
-        skip: offset,
-        take: filterProductDto.limit,
-      });
+      return await this.productRepo.find({ relations });
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve products: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to retrieve products');
     }
-    return await this.productRepo.find({ relations: relations });
   }
 
   async findOne(id: string, relations: string[] = []): Promise<Product> {
-    const product = await this.productRepo.findOne({
-      where: { id },
-      relations,
-    });
-    if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+    try {
+      const product = await this.productRepo.findOne({
+        where: { id },
+        relations,
+      });
+      if (!product) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      }
+      return product;
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve product with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to retrieve the product');
     }
-    return product;
   }
 
   async findByIds(ids: string[], relations: string[] = []): Promise<Product[]> {
-    const products = await this.productRepo.find({
-      where: {
-        id: In(ids),
-      },
-      relations,
-    });
+    try {
+      const products = await this.productRepo.find({
+        where: { id: In(ids) },
+        relations,
+      });
 
-    const foundIds = products.map((product) => product.id);
-    const missingIds = ids.filter((id) => !foundIds.includes(id));
+      const foundIds = products.map((product) => product.id);
+      const missingIds = ids.filter((id) => !foundIds.includes(id));
 
-    if (missingIds.length > 0) {
-      throw new NotFoundException(
-        `Products with the following ids not found: ${missingIds.join(', ')}`,
+      if (missingIds.length > 0) {
+        throw new NotFoundException(
+          `Products with the following ids not found: ${missingIds.join(', ')}`,
+        );
+      }
+
+      return products;
+    } catch (error) {
+      this.logger.error(
+        `Failed to find products by ids: ${error.message}`,
+        error.stack,
       );
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to find products');
     }
-
-    return products;
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const newProduct = this.productRepo.create(createProductDto);
+    try {
+      const newProduct = this.productRepo.create(createProductDto);
 
-    if (createProductDto.brandId) {
-      const brand = await this.brandService.findOne(createProductDto.brandId);
-      newProduct.brand = brand;
-    }
+      if (createProductDto.brandId) {
+        const brand = await this.brandService.findOne(createProductDto.brandId);
+        newProduct.brand = brand;
+      }
 
-    if (createProductDto.categoriesIds) {
-      const categories = await this.categoryService.findByIds(
-        createProductDto.categoriesIds,
+      if (createProductDto.categoriesIds) {
+        const categories = await this.categoryService.findByIds(
+          createProductDto.categoriesIds,
+        );
+        newProduct.categories = categories;
+      }
+
+      return await this.productRepo.save(newProduct);
+    } catch (error) {
+      this.logger.error(
+        `Failed to create product: ${error.message}`,
+        error.stack,
       );
-      newProduct.categories = categories;
+      throw new InternalServerErrorException('Failed to create product');
     }
-
-    return await this.productRepo.save(newProduct);
   }
 
   async update(
@@ -130,7 +168,6 @@ export class ProductService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const queryRunner = this.dataSource.createQueryRunner();
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -159,10 +196,11 @@ export class ProductService {
       return product;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      Logger.error(`Failed to update product: ${error.message}`, error.stack);
-      throw new InternalServerErrorException(
+      this.logger.error(
         `Failed to update product: ${error.message}`,
+        error.stack,
       );
+      throw new InternalServerErrorException('Failed to update product');
     } finally {
       await queryRunner.release();
     }
@@ -173,19 +211,29 @@ export class ProductService {
     product: Product,
     updateProductDto: UpdateProductDto,
   ) {
-    if (updateProductDto.categoriesIdsToAdd) {
-      await this._addCategoriesByProduct(
-        queryRunner,
-        product,
-        updateProductDto.categoriesIdsToAdd,
-      );
-    }
+    try {
+      if (updateProductDto.categoriesIdsToAdd) {
+        await this._addCategoriesByProduct(
+          queryRunner,
+          product,
+          updateProductDto.categoriesIdsToAdd,
+        );
+      }
 
-    if (updateProductDto.categoriesIdsToDelete) {
-      await this._removeCategoriesByProduct(
-        queryRunner,
-        product,
-        updateProductDto.categoriesIdsToDelete,
+      if (updateProductDto.categoriesIdsToDelete) {
+        await this._removeCategoriesByProduct(
+          queryRunner,
+          product,
+          updateProductDto.categoriesIdsToDelete,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle category updates for product with id ${product.id}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to handle category updates for the product',
       );
     }
   }
@@ -228,7 +276,7 @@ export class ProductService {
       return product;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.error(
+      this.logger.error(
         `Failed to add categories to product: ${error.message}`,
         error.stack,
       );
@@ -254,7 +302,7 @@ export class ProductService {
       return product;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.error(
+      this.logger.error(
         `Failed to remove categories from product: ${error.message}`,
         error.stack,
       );
@@ -265,7 +313,7 @@ export class ProductService {
       try {
         await queryRunner.release();
       } catch (releaseError) {
-        console.error(
+        this.logger.error(
           `Failed to release query runner after removing categories: ${releaseError.message}`,
           releaseError.stack,
         );
@@ -303,8 +351,16 @@ export class ProductService {
   }
 
   async remove(id: string): Promise<void> {
-    const product = await this.findOne(id);
-    await this.productRepo.delete(id);
+    try {
+      const product = await this.findOne(id);
+      await this.productRepo.remove(product);
+    } catch (error) {
+      this.logger.error(
+        `Failed to remove product with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to remove product');
+    }
   }
 
   async seed() {

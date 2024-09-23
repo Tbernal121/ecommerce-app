@@ -14,6 +14,8 @@ import { userSeedData } from './data/user.data';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
 
@@ -23,46 +25,83 @@ export class UserService {
   ) {}
 
   async findAll(relations: string[] = []): Promise<User[]> {
-    return await this.userRepo.find({ relations: relations });
+    try {
+      return await this.userRepo.find({ relations });
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve users: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to retrieve users');
+    }
   }
 
   async findOne(id: string, relations: string[] = []): Promise<User> {
-    const user = await this.userRepo.findOne({
-      where: { id },
-      relations,
-    });
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+    try {
+      const user = await this.userRepo.findOne({ where: { id }, relations });
+      if (!user) {
+        throw new NotFoundException(`User with id ${id} not found`);
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve user with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw specific NotFoundException
+      }
+      throw new InternalServerErrorException('Failed to retrieve the user');
     }
-    return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = this.userRepo.create(createUserDto);
-    if (createUserDto.customerId) {
-      const customer = await this.customerService.findOne(
-        createUserDto.customerId,
-      );
-      newUser.customer = customer;
+    try {
+      const newUser = this.userRepo.create(createUserDto);
+      if (createUserDto.customerId) {
+        const customer = await this.customerService.findOne(
+          createUserDto.customerId,
+        );
+        newUser.customer = customer;
+      }
+      return await this.userRepo.save(newUser);
+    } catch (error) {
+      this.logger.error(`Failed to create user: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to create user');
     }
-    return await this.userRepo.save(newUser);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    if (updateUserDto.customerId) {
-      const customer = await this.customerService.findOne(
-        updateUserDto.customerId,
+    try {
+      const user = await this.findOne(id);
+      if (updateUserDto.customerId) {
+        const customer = await this.customerService.findOne(
+          updateUserDto.customerId,
+        );
+        user.customer = customer;
+      }
+      this.userRepo.merge(user, updateUserDto);
+      return await this.userRepo.save(user);
+    } catch (error) {
+      this.logger.error(
+        `Failed to update user with id ${id}: ${error.message}`,
+        error.stack,
       );
-      user.customer = customer;
+      throw new InternalServerErrorException('Failed to update user');
     }
-    this.userRepo.merge(user, updateUserDto);
-    return await this.userRepo.save(user);
   }
 
   async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
-    await this.userRepo.delete(id);
+    try {
+      const user = await this.findOne(id);
+      await this.userRepo.remove(user);
+    } catch (error) {
+      this.logger.error(
+        `Failed to remove user with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to remove user');
+    }
   }
 
   async seed() {

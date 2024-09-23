@@ -21,6 +21,8 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
 @Injectable()
 export class OrderService {
+  private readonly logger = new Logger(OrderService.name);
+
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
@@ -35,43 +37,83 @@ export class OrderService {
   ) {}
 
   async findAll(relations: string[] = []): Promise<Order[]> {
-    return await this.orderRepo.find({ relations: relations });
+    try {
+      return await this.orderRepo.find({ relations });
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve orders: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to retrieve orders');
+    }
   }
 
   async findOne(id: string, relations: string[] = []): Promise<Order> {
-    const order = await this.orderRepo.findOne({
-      where: { id },
-      relations,
-    });
-    if (!order) {
-      throw new NotFoundException(`Order with id ${id} not found`);
+    try {
+      const order = await this.orderRepo.findOne({ where: { id }, relations });
+      if (!order) {
+        throw new NotFoundException(`Order with id ${id} not found`);
+      }
+      return order;
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve order with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to retrieve the order');
     }
-    return order;
   }
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    return await this.processOrder(createOrderDto);
+    try {
+      return await this.processOrder(createOrderDto);
+    } catch (error) {
+      this.logger.error(
+        `Failed to create order: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to create order');
+    }
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
-    const order = await this.findOne(id);
-    console.log('existing order:', order);
-    this.orderRepo.merge(order, updateOrderDto);
-    return await this.orderRepo.save(order);
+    try {
+      const order = await this.findOne(id);
+      console.log('existing order:', order);
+      this.orderRepo.merge(order, updateOrderDto);
+      return await this.orderRepo.save(order);
+    } catch (error) {
+      this.logger.error(
+        `Failed to update order with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to update order');
+    }
   }
 
   async updateStatus(
     id: string,
     updateOrderStatusDto: UpdateOrderStatusDto,
   ): Promise<Order> {
-    const order = await this.findOne(id);
+    try {
+      const order = await this.findOne(id);
 
-    if (order.status !== updateOrderStatusDto.status) {
-      order.status = updateOrderStatusDto.status;
-      await this.orderRepo.save(order);
+      if (order.status !== updateOrderStatusDto.status) {
+        order.status = updateOrderStatusDto.status;
+        await this.orderRepo.save(order);
+      }
+
+      return order;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update status of order with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to update order status');
     }
-
-    return order;
   }
 
   private async processOrder(
@@ -123,16 +165,25 @@ export class OrderService {
 
       return await this.orderRepo.save(order);
     } catch (error) {
-      Logger.error(`Failed to process order: ${error.message}`, error.stack);
-      throw new InternalServerErrorException(
+      this.logger.error(
         `Failed to process order: ${error.message}`,
+        error.stack,
       );
+      throw new InternalServerErrorException('Failed to process order');
     }
   }
 
   async remove(id: string): Promise<void> {
-    const order = await this.findOne(id);
-    await this.orderRepo.delete(id);
+    try {
+      const order = await this.findOne(id);
+      await this.orderRepo.remove(order);
+    } catch (error) {
+      this.logger.error(
+        `Failed to remove order with id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Failed to remove order');
+    }
   }
 
   async seed(): Promise<void> {
@@ -151,6 +202,7 @@ export class OrderService {
           await queryRunner.manager.save(order);
         }
       }
+
       for (const orderProductData of orderProductSeedData) {
         const existingOrderProduct = await queryRunner.manager.findOne(
           OrderProduct,
@@ -159,15 +211,17 @@ export class OrderService {
           },
         );
         if (!existingOrderProduct) {
+          const product = await this.productService.findOne(
+            orderProductData.product.id,
+          );
           const orderProduct = queryRunner.manager.create(OrderProduct, {
             ...orderProductData,
-            price: (
-              await this.productService.findOne(orderProductData.product.id)
-            ).price,
+            price: product.price,
           });
           await queryRunner.manager.save(orderProduct);
         }
       }
+
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
