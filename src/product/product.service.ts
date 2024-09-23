@@ -142,21 +142,7 @@ export class ProductService {
           : null,
       ]);
 
-      if (updateProductDto.categoriesIdsToAdd) {
-        await this.addCategoriesByProduct(
-          queryRunner,
-          product,
-          updateProductDto.categoriesIdsToAdd,
-        );
-      }
-
-      if (updateProductDto.categoriesIdsToDelete) {
-        await this.removeCategoriesByProduct(
-          queryRunner,
-          product,
-          updateProductDto.categoriesIdsToDelete,
-        );
-      }
+      await this.handleCategoryUpdates(queryRunner, product, updateProductDto);
 
       if (updateProductDto.hasOwnProperty('brandId')) {
         if (updateProductDto.brandId === null) {
@@ -182,76 +168,138 @@ export class ProductService {
     }
   }
 
-  async addCategoriesByProduct(
+  private async handleCategoryUpdates(
     queryRunner: QueryRunner,
     product: Product,
-    categoryIds: string[],
+    updateProductDto: UpdateProductDto,
   ) {
-    try {
-      if (categoryIds.length === 0) {
-        throw new BadRequestException('Category IDs must be provided');
-      }
-
-      const categories = await this.categoryService.findByIds(categoryIds);
-      const existingCategoryIds = new Set(
-        product.categories.map((category) => category.id),
+    if (updateProductDto.categoriesIdsToAdd) {
+      await this._addCategoriesByProduct(
+        queryRunner,
+        product,
+        updateProductDto.categoriesIdsToAdd,
       );
-      const newCategories = categories.filter(
-        (category) => !existingCategoryIds.has(category.id),
-      );
+    }
 
-      if (newCategories.length === 0) {
-        throw new ConflictException(
-          `All provided categories are already associated with this product`,
-        );
-      }
-
-      product.categories.push(...newCategories);
-      await queryRunner.manager.save(product);
-    } catch (error) {
-      Logger.error(
-        `Failed to add categories to product: ${error.message}`,
-        error.stack,
-      );
-
-      throw new InternalServerErrorException(
-        `Failed to add categories to product: ${error.message}`,
+    if (updateProductDto.categoriesIdsToDelete) {
+      await this._removeCategoriesByProduct(
+        queryRunner,
+        product,
+        updateProductDto.categoriesIdsToDelete,
       );
     }
   }
 
-  async removeCategoriesByProduct(
+  private async _addCategoriesByProduct(
     queryRunner: QueryRunner,
     product: Product,
     categoryIds: string[],
   ) {
-    try {
-      if (categoryIds.length === 0) {
-        throw new BadRequestException('Category IDs must be provided');
-      }
+    if (categoryIds.length === 0) {
+      throw new BadRequestException('Category IDs must be provided');
+    }
 
-      const existingCategoryIds = new Set(
-        product.categories.map((category) => category.id),
-      );
-      const categoriesToRemove = categoryIds.filter((id) =>
-        existingCategoryIds.has(id),
-      );
+    const categories = await this.categoryService.findByIds(categoryIds);
+    const existingCategoryIds = new Set(
+      product.categories.map((category) => category.id),
+    );
+    const newCategories = categories.filter(
+      (category) => !existingCategoryIds.has(category.id),
+    );
 
-      if (categoriesToRemove.length === 0) {
-        throw new ConflictException(
-          `None of the provided categories are associated with this product.`,
-        );
-      }
-
-      product.categories = product.categories.filter(
-        (category) => !categoriesToRemove.includes(category.id),
-      );
-      await queryRunner.manager.save(product);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Failed to remove categories from a product: ${error.message}`,
+    if (newCategories.length === 0) {
+      throw new ConflictException(
+        `All provided categories are already associated with this product`,
       );
     }
+
+    product.categories.push(...newCategories);
+    await queryRunner.manager.save(product);
+  }
+
+  async addCategoriesByProduct(product: Product, categoryIds: string[]) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this._addCategoriesByProduct(queryRunner, product, categoryIds);
+      await queryRunner.commitTransaction();
+      return product;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error(
+        `Failed to add categories to product: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to add categories to product',
+      );
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async removeCategoriesByProduct(
+    product: Product,
+    categoryIds: string[],
+  ): Promise<Product> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this._removeCategoriesByProduct(queryRunner, product, categoryIds);
+      await queryRunner.commitTransaction();
+      return product;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error(
+        `Failed to remove categories from product: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to remove categories from product',
+      );
+    } finally {
+      try {
+        await queryRunner.release();
+      } catch (releaseError) {
+        console.error(
+          `Failed to release query runner after removing categories: ${releaseError.message}`,
+          releaseError.stack,
+        );
+      }
+    }
+  }
+
+  private async _removeCategoriesByProduct(
+    queryRunner: QueryRunner,
+    product: Product,
+    categoryIds: string[],
+  ) {
+    if (categoryIds.length === 0) {
+      throw new BadRequestException('Category IDs must be provided');
+    }
+
+    const existingCategoryIds = new Set(
+      product.categories.map((category) => category.id),
+    );
+    const categoriesToRemove = categoryIds.filter((id) =>
+      existingCategoryIds.has(id),
+    );
+
+    if (categoriesToRemove.length === 0) {
+      throw new ConflictException(
+        `None of the provided categories are associated with this product.`,
+      );
+    }
+
+    product.categories = product.categories.filter(
+      (category) => !categoriesToRemove.includes(category.id),
+    );
+
+    await queryRunner.manager.save(product);
   }
 
   async remove(id: string): Promise<void> {
