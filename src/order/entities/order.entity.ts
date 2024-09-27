@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
 
@@ -37,6 +38,9 @@ export class Order {
   @Exclude()
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt?: Date;
 
   @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
     cascade: true,

@@ -9,6 +9,7 @@ import {
   Tree,
   TreeParent,
   TreeChildren,
+  DeleteDateColumn,
 } from 'typeorm';
 import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
 
@@ -39,6 +40,9 @@ export class Category {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt?: Date;
 
   @ManyToMany(() => Product, (product) => product.categories, {
     onDelete: 'CASCADE',

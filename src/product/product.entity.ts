@@ -7,6 +7,7 @@ import {
   ManyToOne,
   ManyToMany,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 import {
   IsNotEmpty,
@@ -104,6 +105,9 @@ export class Product implements IProduct {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt?: Date;
 
   @ManyToOne(() => Brand, (brand) => brand.products, {
     nullable: true,

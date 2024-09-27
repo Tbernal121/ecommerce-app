@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { IsNotEmpty, IsString, IsEmail, Length, IsEnum } from 'class-validator';
 
@@ -38,6 +39,9 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt?: Date;
 
   @OneToOne(() => Customer, (customer) => customer.user, {
     nullable: true,

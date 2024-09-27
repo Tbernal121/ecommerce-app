@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  DeleteDateColumn,
 } from 'typeorm';
 import {
   IsNotEmpty,
@@ -49,6 +50,9 @@ export class Customer {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt?: Date;
 
   // maybe this shouldn't be nullable
   @OneToOne(() => User, (user) => user.customer, {
