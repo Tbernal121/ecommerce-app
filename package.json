@@ -25,7 +25,8 @@
     "migration:run": "npm run typeorm -- migration:run -d ./src/database/data-source.ts",
     "migration:show": "npm run typeorm -- migration:show -d ./src/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d ./src/database/data-source.ts",
-    "seed": "ts-node -r tsconfig-paths/register ./src/seed/seed.ts"
+    "seed": "ts-node -r tsconfig-paths/register ./src/seed/seed.ts",
+    "check-env": "npx ts-node ./src/tools/check-env.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
